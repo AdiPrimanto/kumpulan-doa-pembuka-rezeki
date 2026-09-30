@@ -134,6 +134,13 @@ const DOA = [
     parts: [{ q: [94, 5, 6] }],
   },
   {
+    id: 'keluarga', kind: 'ayat', hue: 'emerald', arab: 'ربنا هب لنا',
+    title: 'Doa keluarga penyejuk hati', meta: 'QS Al-Furqan: 74',
+    desc: 'Doa memohon pasangan dan keturunan yang menjadi penyejuk hati, serta dijadikan teladan bagi orang bertakwa.',
+    fadhilah: 'Doa ini termasuk sifat ‘Ibādurraḥmān, hamba-hamba Allah Yang Maha Pengasih, yang disebut di akhir surah Al-Furqan (QS. Al-Furqan: 63–77). Allah menjanjikan mereka balasan kedudukan tinggi di surga karena kesabaran mereka (QS. Al-Furqan: 75). Keluarga yang tenteram adalah bagian dari rezeki yang paling berharga.',
+    parts: [{ q: [25, 74, 74] }],
+  },
+  {
     id: 'ikfini', kind: 'doa', hue: 'amber', arab: 'اكفني بحلالك',
     title: 'Doa kecukupan rezeki halal', meta: 'HR. Tirmidzi no. 3563',
     desc: 'Memohon dicukupkan dengan yang halal, dijauhkan dari yang haram, dan tidak bergantung kepada selain Allah.',
