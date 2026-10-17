@@ -123,12 +123,21 @@
       <label class="qari" id="r-qari-wrap">Qari
         <select id="r-qari"></select>
       </label>
+      <label class="toggle"><input type="checkbox" id="t-tajwid" checked> Tajwid</label>
       <label class="toggle"><input type="checkbox" id="t-latin" checked> Latin</label>
       <label class="toggle"><input type="checkbox" id="t-arti" checked> Arti</label>
       <div class="size" role="group" aria-label="Ukuran huruf Arab">
         <button type="button" class="round sm" id="f-down" aria-label="Perkecil huruf Arab">A−</button>
         <button type="button" class="round sm" id="f-up" aria-label="Perbesar huruf Arab">A+</button>
       </div>
+    </div>
+    <div class="tajwid-legend" id="tajwid-legend" aria-label="Panduan warna tajwid">
+      <span class="tajwid-legend-label">Tajwid:</span>
+      <span class="tj-tag tj-mad"><span class="tj-dot"></span>Mad Panjang</span>
+      <span class="tj-tag tj-ghunnah"><span class="tj-dot"></span>Ghunnah</span>
+      <span class="tj-tag tj-ikhfa"><span class="tj-dot"></span>Ikhfa &amp; Iqlab</span>
+      <span class="tj-tag tj-idgham"><span class="tj-dot"></span>Idgham</span>
+      <span class="tj-tag tj-qalqalah"><span class="tj-dot"></span>Qalqalah</span>
     </div>
     <div class="reader-body" id="r-body"></div>
   </dialog>

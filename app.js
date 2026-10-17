@@ -294,10 +294,53 @@ const store = {
 let toastTimer;
 function toast(msg) {
   const el = $('#toast');
+  if (!el) return;
+  // Pastikan toast selalu tampil di lapisan paling atas (di dalam dialog modal saat terbuka)
+  const r = typeof reader !== 'undefined' ? reader : $('#reader');
+  if (r && r.open) {
+    if (el.parentElement !== r) r.appendChild(el);
+  } else {
+    if (el.parentElement !== document.body) document.body.appendChild(el);
+  }
   el.textContent = msg;
   el.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.classList.remove('show'), 3500);
+}
+
+// ---------- Tajwid Color-Coding Parser ----------
+function colorizeTajwid(raw) {
+  if (!raw) return '';
+  let res = esc(raw);
+  const tokens = [];
+  function addToken(cls, content) {
+    const id = `___TJ_${tokens.length}___`;
+    tokens.push(`<span class="${cls}">${content}</span>`);
+    return id;
+  }
+
+  // 1. Mad Wajib / Mad Jaiz / Mad Lazim (tanda maddah ~ \u0653 atau \u06E4, atau alif maddah \u0622)
+  res = res.replace(/([\u0621-\u064A\u0671\u0670][\u064B-\u0652\u0670]*[\u0653\u06E4]|[\u0653\u06E4]|\u0622)/g, (m) => addToken('tj-mad', m));
+
+  // 2. Iqlab (tanda mim kecil \u06E2 atau \u06ED, atau Nun/Tanwin bertemu Ba)
+  res = res.replace(/(ن[\u0652]?[\u06E2\u06ED]|[\u064B\u064C\u064D][\u06E2\u06ED]|(?:ن[\u0652]?|[\u064B\u064C\u064D])ا?\s*ب[\u064B-\u0652]*)/g, (m) => addToken('tj-ikhfa', m));
+
+  // 3. Ghunnah Musyaddadah (Nun bertasydid atau Mim bertasydid \u0651)
+  res = res.replace(/([نم](?:[\u064B-\u0650\u0670]*\u0651|\u0651[\u064B-\u0650\u0670]*))/g, (m) => addToken('tj-ghunnah', m));
+
+  // 4. Qalqalah (Huruf قطبجد berharakat sukun \u0652, \u06DF, \u06E1)
+  res = res.replace(/([قطبجد][\u0652\u06DF\u06E1])/g, (m) => addToken('tj-qalqalah', m));
+
+  // 5. Idgham Bighunnah & Bilaghunnah (Nun sukun atau tanwin bertemu ي ن م و ل ر)
+  res = res.replace(/((?:ن[\u0652]?|[\u064B\u064C\u064D])ا?\s*[ينمولر]\u0651?)/g, (m) => addToken('tj-idgham', m));
+
+  // 6. Ikhfa Haqiqi (Nun sukun atau tanwin bertemu 15 huruf ikhfa)
+  res = res.replace(/((?:ن[\u0652]|[\u064B\u064C\u064D])ا?\s*[تثجدذزسشصضطظفقك])/g, (m) => addToken('tj-ikhfa', m));
+
+  tokens.forEach((span, idx) => {
+    res = res.replace(`___TJ_${idx}___`, span);
+  });
+  return res;
 }
 
 // ---------- Theme ----------
@@ -433,16 +476,33 @@ const playAllBtn = $('#r-playall');
 qariSel.innerHTML = Object.entries(QARI).map(([k, v]) => `<option value="${k}">${v}</option>`).join('');
 qariSel.value = store.get('qari', '05');
 
-const prefs = { latin: store.get('latin', true), arti: store.get('arti', true), size: store.get('size', 2) };
+const prefs = {
+  tajwid: store.get('tajwid', true),
+  latin: store.get('latin', true),
+  arti: store.get('arti', true),
+  size: store.get('size', 2)
+};
+const tajwidToggle = $('#t-tajwid');
+if (tajwidToggle) tajwidToggle.checked = prefs.tajwid;
 $('#t-latin').checked = prefs.latin;
 $('#t-arti').checked = prefs.arti;
 function applyPrefs() {
+  body.classList.toggle('hide-tajwid', !prefs.tajwid);
+  const legend = $('#tajwid-legend');
+  if (legend) legend.hidden = !prefs.tajwid;
   body.classList.toggle('hide-latin', !prefs.latin);
   body.classList.toggle('hide-arti', !prefs.arti);
   reader.style.setProperty('--arab-size', `${prefs.size}rem`);
 }
 applyPrefs();
 
+if (tajwidToggle) {
+  tajwidToggle.addEventListener('change', (e) => {
+    prefs.tajwid = e.target.checked;
+    store.set('tajwid', prefs.tajwid);
+    applyPrefs();
+  });
+}
 $('#t-latin').addEventListener('change', (e) => { prefs.latin = e.target.checked; store.set('latin', prefs.latin); applyPrefs(); });
 $('#t-arti').addEventListener('change', (e) => { prefs.arti = e.target.checked; store.set('arti', prefs.arti); applyPrefs(); });
 $('#f-up').addEventListener('click', () => { prefs.size = Math.min(3.6, +(prefs.size + 0.2).toFixed(1)); store.set('size', prefs.size); applyPrefs(); });
@@ -485,16 +545,16 @@ function renderItems(doa) {
   const hasStatic = items.some((it) => !it.audio);
   body.innerHTML = `
     <details class="fadhilah"><summary>Keutamaan &amp; sumber</summary><p>${doa.fadhilah}</p></details>
-    ${doa.bismillah ? '<p class="basmalah" lang="ar" dir="rtl">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</p>' : ''}
+    ${doa.bismillah ? `<p class="basmalah" lang="ar" dir="rtl">${colorizeTajwid('بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ')}</p>` : ''}
     <ol class="ayat">${items.map((it, i) => `
       <li class="ayah" data-i="${i}">
-        ${it.basmalah ? '<p class="basmalah" lang="ar" dir="rtl">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</p>' : ''}
+        ${it.basmalah ? `<p class="basmalah" lang="ar" dir="rtl">${colorizeTajwid('بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ')}</p>` : ''}
         <div class="ayah-top">
           <span class="ayah-no">${it.no ?? '✦'}</span>
           <span class="ayah-label">${esc(it.label)}</span>
           <button type="button" class="round ayah-play" data-i="${i}" aria-label="Putar ${esc(it.label)}">▶</button>
         </div>
-        <p class="ayah-arab" lang="ar" dir="rtl">${esc(it.arab)}</p>
+        <p class="ayah-arab" lang="ar" dir="rtl">${colorizeTajwid(it.arab)}</p>
         <p class="ayah-latin">${esc(it.latin)}</p>
         <p class="ayah-arti">${esc(it.arti)}</p>
         ${it.count ? (() => { const n = cs[`${doa.id}:${i}`] || 0; return `<div class="counter${n >= it.count ? ' done' : ''}" data-i="${i}">
@@ -562,6 +622,8 @@ reader.addEventListener('close', () => {
   stop();
   current = null;
   history.replaceState(null, '', location.pathname + location.search);
+  const el = $('#toast');
+  if (el && el.parentElement !== document.body) document.body.appendChild(el);
 });
 
 $('#r-share').addEventListener('click', async () => {
