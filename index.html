@@ -14,6 +14,27 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <nav class="top-nav" aria-label="Navigasi Utama">
+    <div class="nav-inner">
+      <a href="#" class="nav-brand" aria-label="Kembali ke atas">
+        <svg class="nav-logo" viewBox="0 0 40 40" width="28" height="28" aria-hidden="true">
+          <path fill="#F2A007" d="M20 2l5 13 13 5-13 5-5 13-5-13-13-5 13-5z"/>
+        </svg>
+        <span class="nav-brand-title">Doa Rezeki</span>
+      </a>
+      <div class="nav-menu">
+        <a href="#daftar" class="nav-link">Doa &amp; Surah</a>
+        <a href="#asmaul-husna" class="nav-link nav-link-special">
+          <span class="badge-sparkle">✨</span> 99 Asmaul Husna
+        </a>
+        <a href="#penyemangat" class="nav-link">Penyemangat</a>
+      </div>
+      <button class="theme-toggle" type="button" aria-label="Ganti tema terang/gelap">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z"/></svg>
+      </button>
+    </div>
+  </nav>
+
   <header class="hero">
     <div class="hero-inner">
       <div class="hero-text">
@@ -22,6 +43,7 @@
         <p class="hero-lede">Surah, ayat pilihan, dan doa dari Al-Qur'an dan hadits. Lengkap dengan tulisan Arab, cara baca latin, arti, dan murottal per ayat.</p>
         <div class="hero-actions">
           <a class="btn btn-solid" href="#daftar">Mulai membaca</a>
+          <a class="btn btn-gold" href="#asmaul-husna">✨ 99 Asmaul Husna</a>
           <a class="btn btn-ghost" href="#penyemangat">Baca penyemangat</a>
         </div>
       </div>
@@ -54,9 +76,6 @@
         <path d="M100 88 L103 97 L112 100 L103 103 L100 112 L97 103 L88 100 L97 97 Z" fill="#23308F"/>
       </svg>
     </div>
-    <button class="theme-toggle" type="button" aria-label="Ganti tema terang/gelap">
-      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z"/></svg>
-    </button>
   </header>
 
   <main>
@@ -81,9 +100,80 @@
           <button type="button" class="chip" data-filter="surah" aria-pressed="false">Surah</button>
           <button type="button" class="chip" data-filter="ayat" aria-pressed="false">Ayat pilihan</button>
           <button type="button" class="chip" data-filter="doa" aria-pressed="false">Doa &amp; dzikir</button>
+          <button type="button" class="chip chip-gold" data-filter="asmaul" aria-pressed="false">✨ Asmaul Husna</button>
         </div>
       </div>
       <ul class="grid" id="grid"></ul>
+    </section>
+
+    <section id="asmaul-husna" class="section asmaul-section" aria-labelledby="asmaul-title">
+      <div class="asmaul-header">
+        <div class="asmaul-badge">
+          <span class="badge-sparkle">✦</span> 99 ASMA'UL HUSNA <span class="badge-sparkle">✦</span>
+        </div>
+        <p class="asmaul-quran-verse" lang="ar" dir="rtl">وَلِلّٰهِ الْأَسْمَاءُ الْحُسْنَىٰ فَادْعُوهُ بِهَا</p>
+        <p class="asmaul-quran-trans">“Dan milik Allah-lah Asma'ul Husna (nama-nama yang terbaik), maka bermohonlah kepada-Nya dengan menyebutnya...” <span class="verse-ref">(QS. Al-A'raf: 180)</span></p>
+        <h2 id="asmaul-title">Daftar 99 Asmaul Husna &amp; Murottal Qari</h2>
+        <p class="asmaul-desc">Lengkap dengan tulisan Arab berharakat, transliterasi Latin, arti bahasa Indonesia, ikhtiar/fadhilah pembuka rezeki, audio lantunan qari per nama, serta pilihan lantunan qari lengkap.</p>
+      </div>
+
+      <!-- Sticky Audio Player Bar -->
+      <div class="asmaul-player-bar" id="asmaul-player-bar">
+        <div class="player-left">
+          <button type="button" class="btn btn-play-all" id="asmaul-playall" aria-label="Putar semua nama atau lantunan">
+            <span class="play-icon" id="asmaul-play-icon">▶</span>
+            <span class="play-label" id="asmaul-play-label">Putar Semua (99 Nama)</span>
+          </button>
+          <label class="qari-select-label" for="asmaul-qari-select">
+            <span class="qari-label-text">Pilihan Qari / Lantunan:</span>
+            <select id="asmaul-qari-select" class="qari-select">
+              <option value="per_nama">🎙️ Qari Per Nama (Tartil Syaikh 1-99)</option>
+              <option value="tvri">📻 Lantunan Merdu Klasik (TVRI Indonesia)</option>
+              <option value="hijjaz">🌿 Grup Nasyid Hijjaz (Syahdu &amp; Harmoni)</option>
+              <option value="sharifah">🌸 Ustazah Sharifah Khasif (Qoriah Internasional)</option>
+              <option value="dzikir99">🌙 Dzikir Merdu 99 (Khusyuk &amp; Menenangkan)</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="player-right" id="asmaul-now-playing-wrap">
+          <div class="now-playing-pill" id="asmaul-now-playing">
+            <span class="now-playing-wave" aria-hidden="true">
+              <span></span><span></span><span></span><span></span>
+            </span>
+            <span class="now-playing-text" id="asmaul-now-text">Siap memutar audio</span>
+          </div>
+          <div class="player-time" id="asmaul-player-time">00:00 / 00:00</div>
+        </div>
+      </div>
+
+      <!-- Filter & Search Toolbar -->
+      <div class="asmaul-toolbar">
+        <div class="search-box">
+          <svg class="search-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+            <circle cx="11" cy="11" r="8" fill="none" stroke="currentColor" stroke-width="2"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <input type="search" id="asmaul-search" placeholder="Cari Asmaul Husna (Latin, Arab, arti, contoh: Razzaq, Kaya, Rezeki, Fattah)..." aria-label="Cari Asmaul Husna">
+          <button type="button" id="asmaul-search-clear" class="search-clear" aria-label="Bersihkan pencarian" hidden>✕</button>
+        </div>
+        <div class="asmaul-cats" role="group" aria-label="Saring kategori Asmaul Husna">
+          <button type="button" class="cat-chip is-active" data-cat="all">Semua (99)</button>
+          <button type="button" class="cat-chip" data-cat="rezeki">🔑 Pembuka Rezeki &amp; Kekayaan</button>
+          <button type="button" class="cat-chip" data-cat="rahmat">❤️ Pengasih &amp; Rahmat</button>
+          <button type="button" class="cat-chip" data-cat="kuasa">👑 Maharaja &amp; Kekuasaan</button>
+          <button type="button" class="cat-chip" data-cat="pelindung">🛡️ Penolong &amp; Penjaga</button>
+          <button type="button" class="cat-chip" data-cat="hikmah">💡 Petunjuk &amp; Hikmah</button>
+        </div>
+      </div>
+
+      <div class="asmaul-count-bar">
+        <span id="asmaul-count-info">Menampilkan 99 Nama Allah</span>
+        <button type="button" class="btn-dzikir-mode" id="btn-toggle-dzikir">📿 Mode Tasbih Dzikir</button>
+      </div>
+
+      <!-- Grid of 99 Cards -->
+      <ul class="asmaul-grid" id="asmaul-grid"></ul>
     </section>
 
     <section id="penyemangat" class="section quotes">
@@ -143,6 +233,7 @@
   </dialog>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="asmaul-husna-data.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

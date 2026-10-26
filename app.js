@@ -241,6 +241,12 @@ const DOA = [
       },
     ],
   },
+  {
+    id: 'asmaul-husna-tile', kind: 'asmaul', hue: 'amber', arab: 'أَسْمَاءُ اللهِ',
+    title: '99 Asmaul Husna', meta: '99 Nama Mulia · Qari Murottal',
+    desc: 'Nama-nama Allah yang paling indah dan agung. Membuka pintu rezeki, kemudahan urusan, dan ketenteraman batin.',
+    fadhilah: 'Allah SWT berfirman: “Dan milik Allah-lah Asmaul Husna (nama-nama yang terbaik), maka bermohonlah kepada-Nya dengan menyebutnya…” (QS. Al-A’raf: 180).'
+  },
 ];
 
 // Saran bacaan menurut waktu (jam lokal).
@@ -426,12 +432,27 @@ grid.innerHTML = DOA.map((d) => `
 
 grid.addEventListener('click', (e) => {
   const tile = e.target.closest('.tile');
-  if (tile) openReader(DOA.find((d) => d.id === tile.dataset.id));
+  if (!tile) return;
+  if (tile.dataset.id === 'asmaul-husna-tile') {
+    const sec = $('#asmaul-husna');
+    if (sec) {
+      sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      history.replaceState(null, '', '#asmaul-husna');
+    }
+    return;
+  }
+  openReader(DOA.find((d) => d.id === tile.dataset.id));
 });
 
 document.querySelectorAll('.chip').forEach((chip) => chip.addEventListener('click', () => {
   document.querySelectorAll('.chip').forEach((c) => c.setAttribute('aria-pressed', c === chip));
   const f = chip.dataset.filter;
+  if (f === 'asmaul') {
+    grid.querySelectorAll('li').forEach((li) => { li.hidden = li.dataset.kind !== 'asmaul'; });
+    const sec = $('#asmaul-husna');
+    if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return;
+  }
   grid.querySelectorAll('li').forEach((li) => { li.hidden = f !== 'all' && li.dataset.kind !== f; });
 }));
 
@@ -516,6 +537,7 @@ let items = [];
 let current = null;
 
 async function openReader(doa) {
+  if (typeof stopAsmaulAudio === 'function') stopAsmaulAudio();
   current = doa;
   reader.style.setProperty('--hue', hueVar(doa.hue));
   $('#r-arab').textContent = doa.arab;
@@ -637,6 +659,11 @@ $('#r-share').addEventListener('click', async () => {
 });
 
 function openFromHash() {
+  if (location.hash === '#asmaul-husna') {
+    const sec = $('#asmaul-husna');
+    if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return;
+  }
   const doa = DOA.find((d) => `#${d.id}` === location.hash);
   if (doa && current !== doa) openReader(doa);
 }
@@ -661,6 +688,7 @@ function markPlaying() {
 }
 
 function playAt(i, all) {
+  if (typeof stopAsmaulAudio === 'function') stopAsmaulAudio();
   audio.pause();
   if ('speechSynthesis' in window) speechSynthesis.cancel();
   if (i >= items.length) return stop();
@@ -737,3 +765,451 @@ if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
 
 refreshWirid();
 openFromHash();
+
+// ---------- 99 Asmaul Husna & Qari Audio ----------
+const ASMAUL_QARI = {
+  per_nama: {
+    name: 'Qari Per Nama (Tartil Syaikh 1-99)',
+    type: 'sequential'
+  },
+  tvri: {
+    name: 'Lantunan Merdu Klasik (TVRI Indonesia)',
+    type: 'full',
+    url: 'https://archive.org/download/kumpulan-asmaul-husna/000%20ASMA%20UL%20HUSNA%20%20%2800%29.mp3'
+  },
+  hijjaz: {
+    name: 'Grup Nasyid Hijjaz (Syahdu & Harmoni)',
+    type: 'full',
+    url: 'https://archive.org/download/kumpulan-asmaul-husna/000%20Asmaul%20Husna%20-%20Hijjaz.mp3'
+  },
+  sharifah: {
+    name: 'Ustazah Sharifah Khasif (Qoriah Internasional)',
+    type: 'full',
+    url: 'https://archive.org/download/kumpulan-asmaul-husna/000%20Asmaul%20Husna%20-%20Sharifah%20Khasif.mp3'
+  },
+  dzikir99: {
+    name: 'Dzikir Merdu 99 (Khusyuk & Menenangkan)',
+    type: 'full',
+    url: 'https://archive.org/download/kumpulan-asmaul-husna/000%20Asmaul%20Husna%20-Dzikir%2099.mp3'
+  }
+};
+
+const asmaulState = {
+  audio: new Audio(),
+  isPlaying: false,
+  mode: null, // 'sequential' | 'single' | 'full'
+  seqIndex: -1,
+  singleId: null,
+  activeCat: 'all',
+  searchQuery: '',
+  qariKey: store.get('asmaul_qari', 'per_nama'),
+  dzikirOpen: false,
+  dzikirCounts: store.get('asmaul_dzikir', {})
+};
+asmaulState.audio.preload = 'auto';
+
+const asmaulGrid = $('#asmaul-grid');
+const asmaulPlayAllBtn = $('#asmaul-playall');
+const asmaulPlayIcon = $('#asmaul-play-icon');
+const asmaulPlayLabel = $('#asmaul-play-label');
+const asmaulQariSelect = $('#asmaul-qari-select');
+const asmaulPlayerBar = $('#asmaul-player-bar');
+const asmaulNowText = $('#asmaul-now-text');
+const asmaulPlayerTime = $('#asmaul-player-time');
+const asmaulSearch = $('#asmaul-search');
+const asmaulSearchClear = $('#asmaul-search-clear');
+const asmaulCountInfo = $('#asmaul-count-info');
+const btnToggleDzikir = $('#btn-toggle-dzikir');
+
+if (asmaulQariSelect) {
+  asmaulQariSelect.value = asmaulState.qariKey;
+  asmaulQariSelect.addEventListener('change', () => {
+    asmaulState.qariKey = asmaulQariSelect.value;
+    store.set('asmaul_qari', asmaulState.qariKey);
+    const qari = ASMAUL_QARI[asmaulState.qariKey];
+    if (asmaulPlayLabel && !asmaulState.isPlaying) {
+      asmaulPlayLabel.textContent = qari?.type === 'full' ? `Putar ${qari.name}` : 'Putar Semua (99 Nama)';
+    }
+    if (asmaulState.isPlaying) {
+      if (qari?.type === 'full') {
+        playAsmaulFull(asmaulState.qariKey);
+      } else {
+        playAsmaulSequential(0);
+      }
+    }
+  });
+}
+
+function getFilteredAsmaul() {
+  if (typeof ASMAUL_HUSNA === 'undefined') return [];
+  const q = asmaulState.searchQuery.trim().toLowerCase();
+  return ASMAUL_HUSNA.filter((item) => {
+    const matchCat = asmaulState.activeCat === 'all' || item.cat === asmaulState.activeCat;
+    if (!matchCat) return false;
+    if (!q) return true;
+    return item.latin.toLowerCase().includes(q) ||
+      item.arti.toLowerCase().includes(q) ||
+      item.arab.includes(q) ||
+      (item.fadhilah && item.fadhilah.toLowerCase().includes(q)) ||
+      String(item.id) === q;
+  });
+}
+
+function renderAsmaulGrid() {
+  if (!asmaulGrid || typeof ASMAUL_HUSNA === 'undefined') return;
+  const list = getFilteredAsmaul();
+  if (asmaulCountInfo) {
+    asmaulCountInfo.textContent = `Menampilkan ${list.length} dari 99 Nama Allah`;
+  }
+
+  if (list.length === 0) {
+    asmaulGrid.innerHTML = `
+      <li style="grid-column: 1 / -1; text-align: center; padding: 3rem 1rem; color: var(--muted);">
+        <p style="font-size: 1.1rem; margin-bottom: 1rem;">Tidak menemukan nama yang cocok dengan "${esc(asmaulState.searchQuery)}"</p>
+        <button type="button" class="btn btn-solid" id="btn-reset-search" style="padding: .6rem 1.2rem; font-size: .9rem;">Reset Pencarian</button>
+      </li>
+    `;
+    const rBtn = $('#btn-reset-search');
+    if (rBtn) {
+      rBtn.addEventListener('click', () => {
+        asmaulState.searchQuery = '';
+        if (asmaulSearch) asmaulSearch.value = '';
+        if (asmaulSearchClear) asmaulSearchClear.hidden = true;
+        renderAsmaulGrid();
+      });
+    }
+    return;
+  }
+
+  asmaulGrid.innerHTML = list.map((item) => {
+    const isPlaying = asmaulState.isPlaying && (
+      (asmaulState.mode === 'single' && asmaulState.singleId === item.id) ||
+      (asmaulState.mode === 'sequential' && asmaulState.singleId === item.id)
+    );
+    const count = asmaulState.dzikirCounts[item.id] || 0;
+    const progress = Math.min(100, Math.round((count / 33) * 100));
+
+    return `
+      <li class="asmaul-card${isPlaying ? ' is-playing' : ''}" data-id="${item.id}" data-cat="${item.cat}">
+        <div class="card-head">
+          <span class="card-num">#${item.id}</span>
+          ${item.fadhilah ? `<span class="badge-rezeki" title="${esc(item.fadhilah)}">✨ Rezeki</span>` : ''}
+          <div class="card-actions">
+            <button type="button" class="asmaul-btn-play" data-id="${item.id}" aria-label="Putar pelafalan ${esc(item.latin)}">
+              ${isPlaying ? '■' : '▶'}
+            </button>
+            <button type="button" class="asmaul-btn-count" data-id="${item.id}" aria-label="Buka tasbih dzikir ${esc(item.latin)}">
+              📿
+            </button>
+          </div>
+        </div>
+        <div class="card-arab-wrap">
+          <p class="card-arab" lang="ar" dir="rtl">${esc(item.arab)}</p>
+        </div>
+        <div class="card-body">
+          <h3 class="card-latin">${esc(item.latin)}</h3>
+          <p class="card-arti">${esc(item.arti)}</p>
+          ${item.fadhilah ? `<p class="card-fadhilah"><span class="fadhilah-icon">💡</span> ${esc(item.fadhilah)}</p>` : ''}
+        </div>
+        <div class="card-counter" id="dzikir-${item.id}" ${asmaulState.dzikirOpen ? '' : 'hidden'}>
+          <div class="dzikir-controls">
+            <button type="button" class="btn-dzikir-sub" data-id="${item.id}" aria-label="Kurangi dzikir">−</button>
+            <span class="dzikir-val"><b id="dzikir-val-${item.id}">${count}</b> <small>/ 33×</small></span>
+            <button type="button" class="btn-dzikir-add" data-id="${item.id}" aria-label="Tambah dzikir">+</button>
+            <button type="button" class="btn-dzikir-reset" data-id="${item.id}" title="Reset ke 0">↺</button>
+          </div>
+          <div class="dzikir-progress"><span id="dzikir-bar-${item.id}" style="width:${progress}%"></span></div>
+        </div>
+      </li>
+    `;
+  }).join('');
+}
+
+function stopAsmaulAudio() {
+  asmaulState.audio.pause();
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
+  asmaulState.isPlaying = false;
+  asmaulState.mode = null;
+  asmaulState.seqIndex = -1;
+  asmaulState.singleId = null;
+
+  if (asmaulPlayerBar) asmaulPlayerBar.classList.remove('is-playing');
+  if (asmaulPlayAllBtn) {
+    asmaulPlayAllBtn.classList.remove('playing');
+    if (asmaulPlayIcon) asmaulPlayIcon.textContent = '▶';
+    const qari = ASMAUL_QARI[asmaulState.qariKey];
+    if (asmaulPlayLabel) {
+      asmaulPlayLabel.textContent = qari?.type === 'full' ? `Putar ${qari.name}` : 'Putar Semua (99 Nama)';
+    }
+  }
+  if (asmaulNowText) asmaulNowText.textContent = 'Siap memutar audio';
+  if (asmaulPlayerTime) asmaulPlayerTime.textContent = '00:00 / 00:00';
+
+  document.querySelectorAll('.asmaul-card.is-playing').forEach((c) => {
+    c.classList.remove('is-playing');
+    const b = c.querySelector('.asmaul-btn-play');
+    if (b) b.textContent = '▶';
+  });
+}
+
+function fmtTime(sec) {
+  if (isNaN(sec) || !isFinite(sec)) return '00:00';
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+}
+
+asmaulState.audio.addEventListener('timeupdate', () => {
+  if (!asmaulState.isPlaying || !asmaulPlayerTime) return;
+  const cur = asmaulState.audio.currentTime;
+  const dur = asmaulState.audio.duration;
+  asmaulPlayerTime.textContent = `${fmtTime(cur)} / ${fmtTime(dur)}`;
+});
+
+asmaulState.audio.addEventListener('ended', () => {
+  if (asmaulState.mode === 'sequential') {
+    const list = getFilteredAsmaul();
+    if (asmaulState.seqIndex + 1 < list.length) {
+      playAsmaulSequential(asmaulState.seqIndex + 1);
+    } else {
+      stopAsmaulAudio();
+      toast('Alhamdulillah, telah selesai menyimak 99 Asmaul Husna.');
+    }
+  } else {
+    stopAsmaulAudio();
+  }
+});
+
+asmaulState.audio.addEventListener('error', () => {
+  if (asmaulState.mode === 'single' && asmaulState.singleId) {
+    const item = ASMAUL_HUSNA.find((x) => x.id === asmaulState.singleId);
+    const voice = arabicVoice();
+    if (item && voice && 'speechSynthesis' in window) {
+      const u = new SpeechSynthesisUtterance(item.arab);
+      u.voice = voice;
+      u.lang = voice.lang;
+      u.rate = 0.8;
+      u.onend = () => stopAsmaulAudio();
+      speechSynthesis.speak(u);
+      return;
+    }
+  }
+  toast('Audio gagal dimuat. Periksa koneksi internet.');
+  stopAsmaulAudio();
+});
+
+function playSingleName(id) {
+  stop(); // stop reader audio if playing
+  const item = ASMAUL_HUSNA.find((x) => x.id === id);
+  if (!item) return;
+
+  if (asmaulState.isPlaying && asmaulState.mode === 'single' && asmaulState.singleId === id) {
+    stopAsmaulAudio();
+    return;
+  }
+
+  stopAsmaulAudio();
+  asmaulState.isPlaying = true;
+  asmaulState.mode = 'single';
+  asmaulState.singleId = id;
+
+  if (asmaulPlayerBar) asmaulPlayerBar.classList.add('is-playing');
+  if (asmaulNowText) asmaulNowText.textContent = `#${item.id} ${item.latin} - ${item.arti}`;
+
+  document.querySelectorAll('.asmaul-card').forEach((card) => {
+    const active = +card.dataset.id === id;
+    card.classList.toggle('is-playing', active);
+    const btn = card.querySelector('.asmaul-btn-play');
+    if (btn) btn.textContent = active ? '■' : '▶';
+  });
+
+  asmaulState.audio.src = item.audio;
+  asmaulState.audio.play().catch(() => {
+    const voice = arabicVoice();
+    if (voice && 'speechSynthesis' in window) {
+      const u = new SpeechSynthesisUtterance(item.arab);
+      u.voice = voice;
+      u.lang = voice.lang;
+      u.rate = 0.8;
+      u.onend = () => stopAsmaulAudio();
+      speechSynthesis.speak(u);
+    } else {
+      toast('Audio pelafalan gagal diputar.');
+      stopAsmaulAudio();
+    }
+  });
+}
+
+function playAsmaulSequential(index) {
+  stop();
+  const list = getFilteredAsmaul();
+  if (index >= list.length) {
+    stopAsmaulAudio();
+    return;
+  }
+
+  const item = list[index];
+  asmaulState.isPlaying = true;
+  asmaulState.mode = 'sequential';
+  asmaulState.seqIndex = index;
+  asmaulState.singleId = item.id;
+
+  if (asmaulPlayerBar) asmaulPlayerBar.classList.add('is-playing');
+  if (asmaulPlayAllBtn) {
+    asmaulPlayAllBtn.classList.add('playing');
+    if (asmaulPlayIcon) asmaulPlayIcon.textContent = '■';
+    if (asmaulPlayLabel) asmaulPlayLabel.textContent = 'Hentikan Putar';
+  }
+  if (asmaulNowText) {
+    asmaulNowText.textContent = `[${index + 1}/${list.length}] #${item.id} ${item.latin} (${item.arti})`;
+  }
+
+  document.querySelectorAll('.asmaul-card').forEach((card) => {
+    const active = +card.dataset.id === item.id;
+    card.classList.toggle('is-playing', active);
+    const btn = card.querySelector('.asmaul-btn-play');
+    if (btn) btn.textContent = active ? '■' : '▶';
+    if (active) card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
+
+  asmaulState.audio.src = item.audio;
+  asmaulState.audio.play().catch(() => {
+    setTimeout(() => {
+      if (asmaulState.isPlaying && asmaulState.mode === 'sequential') {
+        playAsmaulSequential(index + 1);
+      }
+    }, 1500);
+  });
+}
+
+function playAsmaulFull(qariKey) {
+  stop();
+  const qari = ASMAUL_QARI[qariKey];
+  if (!qari || !qari.url) return;
+
+  asmaulState.isPlaying = true;
+  asmaulState.mode = 'full';
+  asmaulState.seqIndex = -1;
+  asmaulState.singleId = null;
+
+  if (asmaulPlayerBar) asmaulPlayerBar.classList.add('is-playing');
+  if (asmaulPlayAllBtn) {
+    asmaulPlayAllBtn.classList.add('playing');
+    if (asmaulPlayIcon) asmaulPlayIcon.textContent = '■';
+    if (asmaulPlayLabel) asmaulPlayLabel.textContent = 'Hentikan Putar';
+  }
+  if (asmaulNowText) asmaulNowText.textContent = `Memutar: ${qari.name}`;
+
+  document.querySelectorAll('.asmaul-card.is-playing').forEach((c) => {
+    c.classList.remove('is-playing');
+    const b = c.querySelector('.asmaul-btn-play');
+    if (b) b.textContent = '▶';
+  });
+
+  asmaulState.audio.src = qari.url;
+  asmaulState.audio.play().catch(() => {
+    toast('Audio lantunan qari gagal diputar. Periksa koneksi internet.');
+    stopAsmaulAudio();
+  });
+}
+
+if (asmaulPlayAllBtn) {
+  asmaulPlayAllBtn.addEventListener('click', () => {
+    if (asmaulState.isPlaying) {
+      stopAsmaulAudio();
+    } else {
+      const qari = ASMAUL_QARI[asmaulState.qariKey];
+      if (qari?.type === 'full') {
+        playAsmaulFull(asmaulState.qariKey);
+      } else {
+        playAsmaulSequential(0);
+      }
+    }
+  });
+}
+
+if (asmaulSearch) {
+  asmaulSearch.addEventListener('input', () => {
+    asmaulState.searchQuery = asmaulSearch.value;
+    if (asmaulSearchClear) asmaulSearchClear.hidden = !asmaulState.searchQuery;
+    renderAsmaulGrid();
+  });
+}
+
+if (asmaulSearchClear) {
+  asmaulSearchClear.addEventListener('click', () => {
+    asmaulState.searchQuery = '';
+    asmaulSearch.value = '';
+    asmaulSearchClear.hidden = true;
+    asmaulSearch.focus();
+    renderAsmaulGrid();
+  });
+}
+
+document.querySelectorAll('.cat-chip').forEach((chip) => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.cat-chip').forEach((c) => c.classList.toggle('is-active', c === chip));
+    asmaulState.activeCat = chip.dataset.cat;
+    renderAsmaulGrid();
+  });
+});
+
+if (btnToggleDzikir) {
+  btnToggleDzikir.addEventListener('click', () => {
+    asmaulState.dzikirOpen = !asmaulState.dzikirOpen;
+    btnToggleDzikir.classList.toggle('is-active', asmaulState.dzikirOpen);
+    btnToggleDzikir.textContent = asmaulState.dzikirOpen ? '✕ Tutup Tasbih Dzikir' : '📿 Mode Tasbih Dzikir';
+    document.querySelectorAll('.card-counter').forEach((cc) => {
+      cc.hidden = !asmaulState.dzikirOpen;
+    });
+  });
+}
+
+if (asmaulGrid) {
+  asmaulGrid.addEventListener('click', (e) => {
+    const playBtn = e.target.closest('.asmaul-btn-play');
+    if (playBtn) {
+      const id = +playBtn.dataset.id;
+      playSingleName(id);
+      return;
+    }
+
+    const countToggleBtn = e.target.closest('.asmaul-btn-count');
+    if (countToggleBtn) {
+      const id = countToggleBtn.dataset.id;
+      const cnt = $(`#dzikir-${id}`);
+      if (cnt) cnt.hidden = !cnt.hidden;
+      return;
+    }
+
+    const stepBtn = e.target.closest('.btn-dzikir-add, .btn-dzikir-sub, .btn-dzikir-reset');
+    if (stepBtn) {
+      const id = stepBtn.dataset.id;
+      const prev = asmaulState.dzikirCounts[id] || 0;
+      let nextVal = prev;
+      if (stepBtn.classList.contains('btn-dzikir-add')) {
+        nextVal = prev + 1;
+        navigator.vibrate?.(15);
+        if (nextVal === 33 || nextVal === 100) {
+          navigator.vibrate?.(250);
+          toast(`Alhamdulillah, ${nextVal}× selesai.`);
+        }
+      } else if (stepBtn.classList.contains('btn-dzikir-sub')) {
+        nextVal = Math.max(0, prev - 1);
+      } else if (stepBtn.classList.contains('btn-dzikir-reset')) {
+        nextVal = 0;
+      }
+
+      asmaulState.dzikirCounts[id] = nextVal;
+      store.set('asmaul_dzikir', asmaulState.dzikirCounts);
+
+      const valEl = $(`#dzikir-val-${id}`);
+      const barEl = $(`#dzikir-bar-${id}`);
+      if (valEl) valEl.textContent = nextVal;
+      if (barEl) barEl.style.width = `${Math.min(100, Math.round((nextVal / 33) * 100))}%`;
+    }
+  });
+}
+
+renderAsmaulGrid();
+
