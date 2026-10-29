@@ -22,16 +22,21 @@
         </svg>
         <span class="nav-brand-title">Doa Rezeki</span>
       </a>
-      <div class="nav-menu">
-        <a href="#daftar" class="nav-link">Doa &amp; Surah</a>
-        <a href="#asmaul-husna" class="nav-link nav-link-special">
+      <div class="nav-menu" id="nav-menu">
+        <a href="#daftar" class="nav-link" onclick="closeNavMenu()">Doa &amp; Surah</a>
+        <a href="#asmaul-husna" class="nav-link nav-link-special" onclick="closeNavMenu()">
           <span class="badge-sparkle">✨</span> 99 Asmaul Husna
         </a>
-        <a href="#penyemangat" class="nav-link">Penyemangat</a>
+        <a href="#penyemangat" class="nav-link" onclick="closeNavMenu()">Penyemangat</a>
       </div>
+      <div class="nav-right">
       <button class="theme-toggle" type="button" aria-label="Ganti tema terang/gelap">
         <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z"/></svg>
       </button>
+      <button class="nav-hamburger" id="nav-hamburger" type="button" aria-label="Buka menu navigasi" aria-expanded="false" aria-controls="nav-menu">
+        <span></span><span></span><span></span>
+      </button>
+      </div>
     </div>
   </nav>
 

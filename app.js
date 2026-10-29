@@ -197,6 +197,18 @@ const DOA = [
     ],
   },
   {
+    id: 'rabbi-inni', kind: 'doa', hue: 'emerald', arab: 'رَبِّ إِنِّي',
+    title: 'Doa Nabi Musa memohon kebaikan', meta: 'QS Al-Qasas: 24',
+    desc: 'Doa pasrah Nabi Musa kepada Allah setelah menolong orang lain dalam keadaan lapar dan lelah: "Ya Tuhanku, aku sangat memerlukan kebaikan yang Engkau turunkan kepadaku."',
+    fadhilah: 'Doa ini diabadikan dalam QS. Al-Qasas ayat 24. Nabi Musa mengucapkannya setelah tiba di Madyan dalam keadaan lapar, lelah, dan tidak punya apa-apa—namun beliau tetap menolong dua wanita yang kesulitan mengambil air. Setelah memanjatkan doa ini dengan penuh kepasrahan, Allah mengabulkannya dengan luar biasa: makanan, tempat tinggal yang aman, pekerjaan, bahkan jodoh (menikah dengan putri Nabi Syu\'aib a.s.). Doa ini mengajarkan untuk berserah diri total kepada Allah tanpa membatasi bentuk kebaikan yang diminta, karena Dia Maha Tahu apa yang terbaik bagi hamba-Nya. Cocok diamalkan saat memohon rezeki, pekerjaan, jodoh, atau jalan keluar dari kesulitan.',
+    parts: [{
+      label: 'QS. Al-Qasas: 24 · 40× setiap hari', count: 40,
+      arab: 'رَبِّ إِنِّي لِمَا أَنزَلْتَ إِلَيَّ مِنْ خَيْرٍ فَقِيرٌ',
+      latin: 'Rabbi innī limā anzalta ilayya min khairin faqīr.',
+      arti: 'Ya Tuhanku, sesungguhnya aku sangat memerlukan suatu kebaikan (rezeki) yang Engkau turunkan kepadaku.',
+    }],
+  },
+  {
     id: 'dzikir-sholat', kind: 'doa', hue: 'lapis', arab: 'أذكار الصلاة',
     title: 'Dzikir setelah shalat', meta: 'Wirid sesuai sunnah',
     desc: 'Rangkaian dzikir setelah shalat fardhu: istighfar, Ayat Kursi, tiga surah pelindung, dan tasbih 33×.',
@@ -351,6 +363,32 @@ function colorizeTajwid(raw) {
 
 // ---------- Theme ----------
 const root = document.documentElement;
+
+// ---------- Hamburger Nav ----------
+const hamburger = document.getElementById('nav-hamburger');
+const navMenu = document.getElementById('nav-menu');
+
+function closeNavMenu() {
+  if (navMenu) navMenu.classList.remove('is-open');
+  if (hamburger) hamburger.setAttribute('aria-expanded', 'false');
+}
+
+if (hamburger && navMenu) {
+  hamburger.addEventListener('click', () => {
+    const open = navMenu.classList.toggle('is-open');
+    hamburger.setAttribute('aria-expanded', String(open));
+  });
+
+  // Tutup menu saat klik di luar
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.nav-inner')) closeNavMenu();
+  });
+
+  // Tutup menu saat resize ke desktop
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 760) closeNavMenu();
+  });
+}
 const savedTheme = store.get('theme', null);
 if (savedTheme) root.dataset.theme = savedTheme;
 $('.theme-toggle').addEventListener('click', () => {
