@@ -1,0 +1,1133 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Panduan Bacaan Sholat · Doa Rezeki</title>
+  <meta name="description" content="Panduan surah yang dibaca Nabi ﷺ dalam setiap waktu sholat, lengkap dengan makna dan dalil shahih.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath fill='%23F2A007' d='M20 2l5 13 13 5-13 5-5 13-5-13-13-5 13-5z'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,700;0,800;1,400&family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ===== Sholat Page Specific ===== */
+    .sholat-hero {
+      background:
+        radial-gradient(50rem 25rem at 80% 50%, rgba(30,158,90,.4), transparent 60%),
+        radial-gradient(35rem 20rem at 10% 80%, rgba(35,48,143,.45), transparent 60%),
+        var(--lapis);
+      color: #fff;
+      padding: 4rem 1.5rem 5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .sholat-hero::before {
+      content: "";
+      position: absolute; inset: 0;
+      opacity: .07;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Cg fill='none' stroke='%23fff' stroke-width='1.5'%3E%3Crect x='16' y='16' width='24' height='24'/%3E%3Crect x='16' y='16' width='24' height='24' transform='rotate(45 28 28)'/%3E%3C/g%3E%3C/svg%3E");
+    }
+    .sholat-hero-inner { position: relative; max-width: 720px; margin: 0 auto; }
+    .sholat-hero-icon { font-size: 3.5rem; line-height: 1; margin-bottom: 1rem; animation: rise .7s .2s both cubic-bezier(.2,.8,.2,1); }
+    .sholat-hero h1 {
+      font-size: clamp(2rem, 5vw, 3rem); font-weight: 800;
+      letter-spacing: -.02em; margin: 0 0 .75rem;
+      animation: rise .7s .35s both cubic-bezier(.2,.8,.2,1);
+    }
+    .sholat-hero p {
+      font-size: 1.075rem; color: #D9DEFF; max-width: 52ch; margin: 0 auto 1.75rem;
+      animation: rise .7s .5s both cubic-bezier(.2,.8,.2,1);
+    }
+    .sholat-hero-note {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2);
+      border-radius: 999px; padding: .4rem 1rem;
+      font-size: .88rem; color: #D9DEFF;
+      animation: rise .7s .65s both cubic-bezier(.2,.8,.2,1);
+    }
+
+    /* ===== Waktu Tabs ===== */
+    .waktu-nav {
+      position: sticky; top: 61px; z-index: 100;
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+      overflow-x: auto; scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    @media (max-width: 760px) {
+      .waktu-nav { top: 57px; }
+    }
+    .waktu-nav::-webkit-scrollbar { display: none; }
+    .waktu-tabs {
+      display: flex; align-items: stretch;
+      max-width: 1120px; margin: 0 auto;
+      padding: 0 1rem;
+      gap: 0;
+      min-width: max-content;
+    }
+    .waktu-tab {
+      display: flex; flex-direction: column; align-items: center;
+      padding: .85rem 1.25rem;
+      font: 600 .9rem/1.2 var(--sans);
+      color: var(--muted);
+      background: none; border: none; border-bottom: 3px solid transparent;
+      cursor: pointer; white-space: nowrap;
+      transition: color .15s, border-color .15s;
+      gap: .25rem;
+    }
+    .waktu-tab .tab-icon { font-size: 1.2rem; }
+    .waktu-tab:hover { color: var(--ink); }
+    .waktu-tab.is-active { color: var(--lapis); border-bottom-color: var(--lapis); }
+    :root[data-theme="dark"] .waktu-tab.is-active { color: var(--saffron); border-bottom-color: var(--saffron); }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .waktu-tab.is-active { color: var(--saffron); border-bottom-color: var(--saffron); }
+    }
+
+    /* ===== Main content ===== */
+    .sholat-main { max-width: 860px; margin: 0 auto; padding: 2.5rem 1.5rem 5rem; }
+    .waktu-panel { display: none; }
+    .waktu-panel.is-active { display: block; animation: rise .4s cubic-bezier(.2,.8,.2,1); }
+
+    /* ===== Waktu Header ===== */
+    .waktu-header {
+      display: flex; align-items: center; gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+    .waktu-icon-big {
+      width: 64px; height: 64px; border-radius: 20px; flex: none;
+      display: grid; place-items: center;
+      font-size: 2rem;
+    }
+    .waktu-title-group { flex: 1; }
+    .waktu-title-group h2 { margin: 0 0 .25rem; font-size: 1.75rem; letter-spacing: -.02em; }
+    .waktu-meta { color: var(--muted); font-size: .94rem; margin: 0; }
+    .waktu-dalil {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--lapis);
+      border-radius: 14px;
+      padding: .9rem 1.1rem;
+      margin-bottom: 2rem;
+      font-size: .92rem;
+      color: var(--muted);
+    }
+    :root[data-theme="dark"] .waktu-dalil { border-left-color: var(--saffron); }
+    .waktu-dalil strong { display: block; color: var(--ink); margin-bottom: .3rem; font-size: .88rem; text-transform: uppercase; letter-spacing: .04em; }
+
+    /* ===== Kaidah umum badge ===== */
+    .kaidah-bar {
+      display: flex; flex-wrap: wrap; gap: .5rem;
+      margin-bottom: 2rem;
+    }
+    .kaidah-badge {
+      display: inline-flex; align-items: center; gap: .4rem;
+      padding: .4rem .85rem; border-radius: 999px;
+      background: var(--bg); border: 1px solid var(--line);
+      font-size: .84rem; font-weight: 600; color: var(--muted);
+    }
+    .kaidah-badge .k-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+
+    /* ===== Rakaat Cards ===== */
+    .rakaat-grid { display: grid; gap: 1.25rem; }
+    .rakaat-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      overflow: hidden;
+      transition: border-color .2s, transform .2s;
+    }
+    .rakaat-card:hover { border-color: var(--hue, var(--lapis)); transform: translateY(-2px); }
+    .rakaat-head {
+      background: var(--hue, var(--lapis));
+      color: #fff;
+      padding: .9rem 1.35rem;
+      display: flex; align-items: center; justify-content: space-between; gap: .75rem;
+    }
+    .rakaat-label { font-weight: 800; font-size: 1rem; }
+    .rakaat-panjang {
+      font-size: .8rem; font-weight: 600;
+      background: rgba(255,255,255,.2); border-radius: 999px;
+      padding: .2rem .65rem;
+    }
+    .rakaat-body { padding: 1.25rem 1.35rem; }
+
+    /* Al-Fatihah row */
+    .fatihah-row {
+      display: flex; align-items: center; gap: .85rem;
+      padding: .65rem .85rem;
+      border-radius: 12px;
+      background: rgba(35,48,143,.07);
+      margin-bottom: .85rem;
+    }
+    :root[data-theme="dark"] .fatihah-row { background: rgba(255,255,255,.06); }
+    .fatihah-num {
+      width: 32px; height: 32px; border-radius: 10px; flex: none;
+      background: var(--lapis); color: #fff;
+      font-weight: 800; font-size: .85rem;
+      display: grid; place-items: center;
+    }
+    :root[data-theme="dark"] .fatihah-num { background: var(--saffron); color: #231800; }
+    .fatihah-info { flex: 1; }
+    .fatihah-info strong { display: block; font-size: .95rem; }
+    .fatihah-info span { font-size: .84rem; color: var(--muted); }
+    .fatihah-arab { font-family: "Scheherazade New", serif; font-size: 1.3rem; color: var(--lapis); }
+    :root[data-theme="dark"] .fatihah-arab { color: var(--saffron); filter: brightness(1.3); }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .fatihah-arab { color: var(--saffron); filter: brightness(1.3); }
+    }
+
+    /* Surah options */
+    .surah-options-label {
+      font-size: .8rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .05em; color: var(--muted); margin: 0 0 .6rem;
+    }
+    .surah-options { display: grid; gap: .65rem; }
+    .surah-item {
+      display: flex; align-items: flex-start; gap: .85rem;
+      padding: .85rem 1rem;
+      border-radius: 14px;
+      background: var(--bg);
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: border-color .15s, background-color .15s;
+      width: 100%; text-align: left; font: inherit; color: inherit;
+    }
+    .surah-item:hover { border-color: var(--hue, var(--lapis)); background: var(--surface); }
+    .surah-item.is-sunnah { border-color: rgba(242,160,7,.4); background: rgba(242,160,7,.05); }
+    .surah-num {
+      min-width: 36px; height: 36px; border-radius: 12px; flex: none;
+      background: var(--hue, var(--lapis)); color: #fff;
+      font-weight: 800; font-size: .82rem;
+      display: grid; place-items: center;
+    }
+    .surah-info { flex: 1; min-width: 0; }
+    .surah-name { font-weight: 800; font-size: 1rem; display: block; }
+    .surah-arab-inline { font-family: "Scheherazade New", serif; font-size: 1.15rem; color: var(--muted); }
+    .surah-meta { font-size: .83rem; color: var(--muted); margin-top: .2rem; display: block; }
+    .surah-makna {
+      font-size: .88rem; color: var(--muted); margin-top: .35rem;
+      font-style: italic; display: block;
+      border-left: 3px solid var(--hue, var(--lapis));
+      padding-left: .6rem;
+      opacity: .85;
+    }
+    .sunnah-badge {
+      font-size: .72rem; font-weight: 700; color: #B45309;
+      background: rgba(242,160,7,.15); border: 1px solid rgba(242,160,7,.4);
+      border-radius: 999px; padding: .15rem .5rem;
+      white-space: nowrap; align-self: flex-start; margin-top: .1rem;
+      flex: none;
+    }
+    :root[data-theme="dark"] .sunnah-badge { color: #FBBF24; background: rgba(242,160,7,.2); }
+
+    /* ===== Hanya Al-Fatihah (rakaat 3 & 4) ===== */
+    .only-fatihah {
+      display: flex; align-items: center; gap: .85rem;
+      padding: .85rem 1rem; border-radius: 14px;
+      background: var(--bg); border: 1px solid var(--line);
+      color: var(--muted); font-size: .94rem;
+    }
+    .only-fatihah-icon { font-size: 1.4rem; flex: none; }
+
+    /* ===== Catatan khusus ===== */
+    .catatan-box {
+      margin-top: 2rem;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 1rem 1.25rem;
+      font-size: .9rem; color: var(--muted);
+    }
+    .catatan-box strong { color: var(--ink); display: block; margin-bottom: .4rem; }
+    .catatan-box ul { margin: .4rem 0 0; padding-left: 1.25rem; }
+    .catatan-box li { margin-bottom: .3rem; }
+
+    /* ===== Qunut Section ===== */
+    .qunut-section { margin-top: 2rem; }
+    .qunut-section h3 { font-size: 1.2rem; margin: 0 0 1rem; }
+    .qunut-card {
+      background: var(--surface); border: 1px solid var(--line);
+      border-radius: 18px; padding: 1.35rem;
+    }
+    .qunut-arab {
+      font-family: "Scheherazade New", serif;
+      font-size: clamp(1.4rem, 4.5vw, 1.75rem); line-height: 1.9;
+      text-align: right; color: var(--ink);
+      margin: 0 0 1rem;
+    }
+    .qunut-latin { font-style: italic; color: var(--lapis); font-size: .97rem; margin: 0 0 .5rem; line-height: 1.7; }
+    :root[data-theme="dark"] .qunut-latin { filter: brightness(1.6); color: var(--saffron); }
+    .qunut-arti { color: var(--muted); font-size: .95rem; margin: 0; line-height: 1.65; }
+    .qunut-src { font-size: .82rem; color: var(--muted); margin-top: .85rem; padding-top: .85rem; border-top: 1px solid var(--line); }
+
+    /* ===== Keutamaan box ===== */
+    .keutamaan-card {
+      margin-top: 2rem;
+      border-radius: 18px; overflow: hidden;
+      border: 1px solid var(--line);
+    }
+    .keutamaan-head {
+      background: var(--hue, var(--lapis)); color: #fff;
+      padding: .75rem 1.25rem; font-weight: 700; font-size: .94rem;
+    }
+    .keutamaan-body { background: var(--surface); padding: 1.1rem 1.25rem; }
+    .keutamaan-body p { margin: 0 0 .6rem; font-size: .92rem; color: var(--muted); line-height: 1.65; }
+    .keutamaan-body p:last-child { margin-bottom: 0; }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 760px) {
+      .sholat-hero { padding: 3rem 1rem 4rem; }
+      .waktu-tab { padding: .75rem .9rem; font-size: .82rem; }
+      .waktu-tab .tab-icon { font-size: 1.05rem; }
+      .sholat-main { padding: 1.75rem 1rem 4rem; }
+      .waktu-header { gap: .85rem; }
+      .waktu-icon-big { width: 50px; height: 50px; font-size: 1.6rem; border-radius: 16px; }
+      .waktu-title-group h2 { font-size: 1.4rem; }
+      .rakaat-head { padding: .75rem 1rem; }
+      .rakaat-body { padding: 1rem; }
+      .surah-item { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="top-nav" aria-label="Navigasi Utama">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand" aria-label="Kembali ke halaman utama">
+        <svg class="nav-logo" viewBox="0 0 40 40" width="28" height="28" aria-hidden="true">
+          <path fill="#F2A007" d="M20 2l5 13 13 5-13 5-5 13-5-13-13-5 13-5z"/>
+        </svg>
+        <span class="nav-brand-title">Doa Rezeki</span>
+      </a>
+      <div class="nav-menu" id="nav-menu">
+        <a href="index.html#daftar" class="nav-link" onclick="closeNavMenu()">Doa &amp; Surah</a>
+        <a href="index.html#asmaul-husna" class="nav-link nav-link-special" onclick="closeNavMenu()">
+          <span class="badge-sparkle">✨</span> 99 Asmaul Husna
+        </a>
+        <a href="sholat.html" class="nav-link" style="color:var(--emerald);font-weight:700;" onclick="closeNavMenu()">🕌 Panduan Sholat</a>
+      </div>
+      <div class="nav-right">
+        <button class="theme-toggle" type="button" aria-label="Ganti tema terang/gelap">
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z"/></svg>
+        </button>
+        <button class="nav-hamburger" id="nav-hamburger" type="button" aria-label="Buka menu navigasi" aria-expanded="false" aria-controls="nav-menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <div class="sholat-hero">
+    <div class="sholat-hero-inner">
+      <div class="sholat-hero-icon">🕌</div>
+      <h1>Panduan Bacaan Sholat</h1>
+      <p>Surah yang dibaca Nabi ﷺ pada setiap waktu sholat — lengkap dengan makna, dalil shahih, dan keutamaannya.</p>
+      <span class="sholat-hero-note">📖 Berdasarkan hadits shahih · HR. Bukhari, Muslim, dan lainnya</span>
+    </div>
+  </div>
+
+  <!-- Waktu Tabs -->
+  <nav class="waktu-nav" aria-label="Pilih waktu sholat">
+    <div class="waktu-tabs" role="tablist">
+      <button class="waktu-tab is-active" role="tab" aria-selected="true" data-waktu="subuh">
+        <span class="tab-icon">🌅</span> Subuh
+      </button>
+      <button class="waktu-tab" role="tab" aria-selected="false" data-waktu="dzuhur">
+        <span class="tab-icon">☀️</span> Dzuhur
+      </button>
+      <button class="waktu-tab" role="tab" aria-selected="false" data-waktu="ashar">
+        <span class="tab-icon">🌤️</span> Ashar
+      </button>
+      <button class="waktu-tab" role="tab" aria-selected="false" data-waktu="maghrib">
+        <span class="tab-icon">🌇</span> Maghrib
+      </button>
+      <button class="waktu-tab" role="tab" aria-selected="false" data-waktu="isya">
+        <span class="tab-icon">🌙</span> Isya
+      </button>
+    </div>
+  </nav>
+
+  <main class="sholat-main">
+
+    <!-- ===== SUBUH ===== -->
+    <section class="waktu-panel is-active" id="panel-subuh" role="tabpanel">
+      <div class="waktu-header">
+        <div class="waktu-icon-big" style="background:linear-gradient(135deg,#0E9494,#1B8F52)">🌅</div>
+        <div class="waktu-title-group">
+          <h2>Sholat Subuh</h2>
+          <p class="waktu-meta">2 rakaat · Kategori: <em>Thiwalul Mufashshal</em> (surah panjang–sedang)</p>
+        </div>
+      </div>
+      <div class="waktu-dalil">
+        <strong>📜 Dalil</strong>
+        "Rasulullah ﷺ biasa membaca dalam sholat Subuh antara enam puluh hingga seratus ayat."
+        <br><em style="font-size:.85rem">— HR. Bukhari no. 508 dan Muslim no. 461, dari Abu Barzah Al-Aslami</em>
+      </div>
+      <div class="kaidah-bar">
+        <span class="kaidah-badge"><span class="k-dot" style="background:#F59E0B"></span>Rakaat 1 lebih panjang dari rakaat 2</span>
+        <span class="kaidah-badge"><span class="k-dot" style="background:#1B8F52"></span>Setiap rakaat baca Al-Fatihah dulu</span>
+        <span class="kaidah-badge"><span class="k-dot" style="background:#23308F"></span>Khusus Jumat: As-Sajdah + Al-Insan</span>
+      </div>
+      <div class="rakaat-grid">
+
+        <!-- Rakaat 1 -->
+        <div class="rakaat-card" style="--hue:#0E9494">
+          <div class="rakaat-head">
+            <span class="rakaat-label">Rakaat Pertama</span>
+            <span class="rakaat-panjang">~30–50 ayat</span>
+          </div>
+          <div class="rakaat-body">
+            <div class="fatihah-row">
+              <div class="fatihah-num">1</div>
+              <div class="fatihah-info">
+                <strong>Al-Fatihah <span class="fatihah-arab">الفاتحة</span></strong>
+                <span>QS. 1 · Wajib di setiap rakaat</span>
+              </div>
+            </div>
+            <p class="surah-options-label">+ Lanjutkan dengan salah satu:</p>
+            <div class="surah-options">
+              <button class="surah-item is-sunnah" style="--hue:#0E9494">
+                <span class="surah-num">50</span>
+                <span class="surah-info">
+                  <span class="surah-name">Qaf <span class="surah-arab-inline">ق</span></span>
+                  <span class="surah-meta">QS. 50 · 45 ayat</span>
+                  <span class="surah-makna">Nabi ﷺ menjadikannya bacaan tetap Subuh — mengingatkan kematian, kebangkitan, dan pengawasan Allah atas setiap ucapan hamba.</span>
+                </span>
+                <span class="sunnah-badge">✦ Sunnah Nabi</span>
+              </button>
+              <button class="surah-item" style="--hue:#0E9494">
+                <span class="surah-num">56</span>
+                <span class="surah-info">
+                  <span class="surah-name">Al-Waqi'ah <span class="surah-arab-inline">الواقعة</span></span>
+                  <span class="surah-meta">QS. 56 · 96 ayat</span>
+                  <span class="surah-makna">Hari Kiamat dan pengelompokan manusia: golongan terdahulu, kanan, dan kiri. Masyhur dibaca tiap malam agar dijauhkan dari kefakiran.</span>
+                </span>
+              </button>
+              <button class="surah-item" style="--hue:#0E9494">
+                <span class="surah-num">32</span>
+                <span class="surah-info">
+                  <span class="surah-name">As-Sajdah <span class="surah-arab-inline">السجدة</span></span>
+                  <span class="surah-meta">QS. 32 · 30 ayat · Khusus Jumat pagi rakaat 1</span>
+                  <span class="surah-makna">Penciptaan manusia dan hari akhirat. Nabi ﷺ secara khusus membacanya di rakaat pertama Subuh hari Jumat. Di dalamnya terdapat ayat sajdah.</span>
+                </span>
+                <span class="sunnah-badge">✦ Sunnah Jumat</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rakaat 2 -->
+        <div class="rakaat-card" style="--hue:#0E9494">
+          <div class="rakaat-head">
+            <span class="rakaat-label">Rakaat Kedua</span>
+            <span class="rakaat-panjang">Lebih pendek dari rakaat 1</span>
+          </div>
+          <div class="rakaat-body">
+            <div class="fatihah-row">
+              <div class="fatihah-num">1</div>
+              <div class="fatihah-info">
+                <strong>Al-Fatihah <span class="fatihah-arab">الفاتحة</span></strong>
+                <span>QS. 1 · Wajib di setiap rakaat</span>
+              </div>
+            </div>
+            <p class="surah-options-label">+ Lanjutkan dengan salah satu:</p>
+            <div class="surah-options">
+              <button class="surah-item is-sunnah" style="--hue:#0E9494">
+                <span class="surah-num">81</span>
+                <span class="surah-info">
+                  <span class="surah-name">At-Takwir <span class="surah-arab-inline">التكوير</span></span>
+                  <span class="surah-meta">QS. 81 · 29 ayat</span>
+                  <span class="surah-makna">Deskripsi dahsyat hari Kiamat: matahari digulung, bintang berjatuhan, lautan meluap. Penutup: Al-Qur'an adalah wahyu nyata, bukan ucapan orang gila.</span>
+                </span>
+                <span class="sunnah-badge">✦ Sunnah Nabi</span>
+              </button>
+              <button class="surah-item" style="--hue:#0E9494">
+                <span class="surah-num">99</span>
+                <span class="surah-info">
+                  <span class="surah-name">Az-Zalzalah <span class="surah-arab-inline">الزلزلة</span></span>
+                  <span class="surah-meta">QS. 99 · 8 ayat · Pernah dibaca Nabi di kedua rakaat</span>
+                  <span class="surah-makna">Bumi berguncang dahsyat, manusia bertanya "apa yang terjadi?", lalu setiap amal sekecil biji sawi pun diperhitungkan.</span>
+                </span>
+                <span class="sunnah-badge">✦ Sunnah Nabi</span>
+              </button>
+              <button class="surah-item" style="--hue:#0E9494">
+                <span class="surah-num">76</span>
+                <span class="surah-info">
+                  <span class="surah-name">Al-Insan <span class="surah-arab-inline">الإنسان</span></span>
+                  <span class="surah-meta">QS. 76 · 31 ayat · Khusus Jumat pagi rakaat 2</span>
+                  <span class="surah-makna">Perjalanan manusia dari ketiadaan hingga balasan surga. Nabi ﷺ membacanya di rakaat kedua Subuh hari Jumat, berpasangan dengan As-Sajdah.</span>
+                </span>
+                <span class="sunnah-badge">✦ Sunnah Jumat</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Doa Qunut -->
+      <div class="qunut-section">
+        <h3>🤲 Doa Qunut Subuh</h3>
+        <div class="qunut-card">
+          <p class="qunut-arab" lang="ar" dir="rtl">اَللّٰهُمَّ اهْدِنِيْ فِيْمَنْ هَدَيْتَ، وَعَافِنِيْ فِيْمَنْ عَافَيْتَ، وَتَوَلَّنِيْ فِيْمَنْ تَوَلَّيْتَ، وَبَارِكْ لِيْ فِيْمَا أَعْطَيْتَ، وَقِنِيْ شَرَّ مَا قَضَيْتَ، فَإِنَّكَ تَقْضِيْ وَلَا يُقْضَىٰ عَلَيْكَ، وَإِنَّهُ لَا يَذِلُّ مَنْ وَالَيْتَ، وَلَا يَعِزُّ مَنْ عَادَيْتَ، تَبَارَكْتَ رَبَّنَا وَتَعَالَيْتَ</p>
+          <p class="qunut-latin">Allāhummahdini fīman hadait, wa 'āfinī fīman 'āfait, wa tawallanī fīman tawallait, wa bārik lī fīmā a'ṭait, wa qinī syarra mā qaḍait, fa innaka taqḍī wa lā yuqḍā 'alaik, wa innahū lā yażillu man wālait, wa lā ya'izzu man 'ādait, tabārakta rabbanā wa ta'ālait.</p>
+          <p class="qunut-arti">Ya Allah, berilah aku petunjuk seperti orang yang telah Engkau beri petunjuk; berilah aku kesehatan seperti orang yang telah Engkau beri kesehatan; peliharalah aku seperti orang yang telah Engkau pelihara; berkahilah apa yang telah Engkau berikan kepadaku; jauhkanlah aku dari keburukan yang telah Engkau tetapkan. Sesungguhnya Engkau yang menetapkan dan tidak ada yang bisa menetapkan atas-Mu. Sesungguhnya tidak akan hina orang yang Engkau beri loyalitas, dan tidak akan mulia orang yang Engkau musuhi. Mahasuci dan Mahatinggi Engkau, wahai Tuhan kami.</p>
+          <p class="qunut-src">📖 HR. Abu Dawud no. 1425, Tirmidzi no. 464, An-Nasa'i no. 1745 — dari Al-Hasan bin Ali r.a., diajarkan Rasulullah ﷺ · Para ulama berbeda pendapat: sebagian mewajibkan qunut Subuh, sebagian menganggapnya sunnah ab'adh.</p>
+        </div>
+      </div>
+
+      <div class="keutamaan-card" style="--hue:#0E9494">
+        <div class="keutamaan-head">⭐ Keutamaan Sholat Subuh</div>
+        <div class="keutamaan-body">
+          <p>"Dua rakaat fajar (sunnah Subuh) lebih baik dari dunia dan seisinya." <em>(HR. Muslim no. 725)</em></p>
+          <p>"Barangsiapa sholat Subuh berjamaah kemudian duduk berdzikir hingga matahari terbit, lalu sholat dua rakaat, maka ia mendapat pahala seperti haji dan umrah — sempurna, sempurna, sempurna." <em>(HR. Tirmidzi no. 586, dinilai hasan)</em></p>
+          <p>Waktu Subuh termasuk waktu terbaik untuk rezeki — malaikat pembawa rezeki turun di pagi hari, dan orang yang memanfaatkan pagi hari diberkahi Allah. <em>(HR. Tirmidzi no. 1212)</em></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== DZUHUR ===== -->
+    <section class="waktu-panel" id="panel-dzuhur" role="tabpanel">
+      <div class="waktu-header">
+        <div class="waktu-icon-big" style="background:linear-gradient(135deg,#C27C00,#F2A007)">☀️</div>
+        <div class="waktu-title-group">
+          <h2>Sholat Dzuhur</h2>
+          <p class="waktu-meta">4 rakaat · Kategori: <em>Thiwalul Mufashshal</em> (sedang ~30 ayat per rakaat)</p>
+        </div>
+      </div>
+      <div class="waktu-dalil">
+        <strong>📜 Dalil</strong>
+        "Lamanya Rasulullah ﷺ berdiri pada dua rakaat pertama Dzuhur sebanding dengan membaca Surah As-Sajdah (30 ayat), dan pada dua rakaat terakhir beliau membaca separuhnya."
+        <br><em style="font-size:.85rem">— HR. Muslim no. 452, dari Abu Sa'id Al-Khudri</em>
+      </div>
+      <div class="kaidah-bar">
+        <span class="kaidah-badge"><span class="k-dot" style="background:#F59E0B"></span>Rakaat 1–2: ada surah setelah Al-Fatihah (~30 ayat)</span>
+        <span class="kaidah-badge"><span class="k-dot" style="background:#9CA3AF"></span>Rakaat 3–4: Al-Fatihah saja</span>
+      </div>
+      <div class="rakaat-grid">
+
+        <!-- Rakaat 1 -->
+        <div class="rakaat-card" style="--hue:#C27C00">
+          <div class="rakaat-head">
+            <span class="rakaat-label">Rakaat Pertama</span>
+            <span class="rakaat-panjang">~30 ayat</span>
+          </div>
+          <div class="rakaat-body">
+            <div class="fatihah-row">
+              <div class="fatihah-num">1</div>
+              <div class="fatihah-info">
+                <strong>Al-Fatihah <span class="fatihah-arab">الفاتحة</span></strong>
+                <span>QS. 1 · Wajib di setiap rakaat</span>
+              </div>
+            </div>
+            <p class="surah-options-label">+ Lanjutkan dengan salah satu:</p>
+            <div class="surah-options">
+              <button class="surah-item is-sunnah" style="--hue:#C27C00">
+                <span class="surah-num">87</span>
+                <span class="surah-info">
+                  <span class="surah-name">Al-A'la <span class="surah-arab-inline">الأعلى</span></span>
+                  <span class="surah-meta">QS. 87 · 19 ayat</span>
+                  <span class="surah-makna">"Sucikanlah nama Tuhanmu Yang Maha Tinggi." Berisi perintah tasbih, penciptaan dan penyempurnaan, serta kemenangan bagi yang menyucikan diri dan mengingat Allah.</span>
+                </span>
+                <span class="sunnah-badge">✦ Sunnah Nabi</span>
+              </button>
+              <button class="surah-item is-sunnah" style="--hue:#C27C00">
+                <span class="surah-num">85</span>
+                <span class="surah-info">
+                  <span class="surah-name">Al-Buruj <span class="surah-arab-inline">البروج</span></span>
+                  <span class="surah-meta">QS. 85 · 22 ayat</span>
+                  <span class="surah-makna">Kisah para pemilik parit yang menyiksa kaum beriman. Pengingat: orang beriman yang disiksa dan sabar akan mendapat surga, sementara Allah Maha Membalas.</span>
+                </span>
+                <span class="sunnah-badge">✦ Sunnah Nabi</span>
+              </button>
+              <button class="surah-item" style="--hue:#C27C00">
+                <span class="surah-num">94</span>
+                <span class="surah-info">
+                  <span class="surah-name">Al-Insyirah <span class="surah-arab-inline">الشرح</span></span>
+                  <span class="surah-meta">QS. 94 · 8 ayat</span>
+                  <span class="surah-makna">"Bukankah Kami telah melapangkan dadamu?" — janji Allah: bersama kesulitan pasti ada kemudahan, diulang dua kali. Doa yang baik untuk memulai hari kerja.</span>
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rakaat 2 -->
+        <div class="rakaat-card" style="--hue:#C27C00">
+          <div class="rakaat-head">
+            <span class="rakaat-label">Rakaat Kedua</span>
+            <span class="rakaat-panjang">Sedikit lebih pendek dari rakaat 1</span>
+          </div>
+          <div class="rakaat-body">
+            <div class="fatihah-row">
+              <div class="fatihah-num">1</div>
+              <div class="fatihah-info">
+                <strong>Al-Fatihah <span class="fatihah-arab">الفاتحة</span></strong>
+                <span>QS. 1 · Wajib di setiap rakaat</span>
+              </div>
+            </div>
+            <p class="surah-options-label">+ Lanjutkan dengan salah satu:</p>
+            <div class="surah-options">
+              <button class="surah-item is-sunnah" style="--hue:#C27C00">
+                <span class="surah-num">86</span>
+                <span class="surah-info">
+                  <span class="surah-name">At-Tariq <span class="surah-arab-inline">الطارق</span></span>
+                  <span class="surah-meta">QS. 86 · 17 ayat</span>
+                  <span class="surah-makna">"Demi langit dan yang datang pada malam hari." Setiap jiwa ada penjaganya. Al-Qur'an adalah perkataan yang memisahkan hak dari batil.</span>
+                </span>
+                <span class="sunnah-badge">✦ Sunnah Nabi</span>
+              </button>
+              <button class="surah-item" style="--hue:#C27C00">
+                <span class="surah-num">112</span>
+                <span class="surah-info">
+                  <span class="surah-name">Al-Ikhlas <span class="surah-arab-inline">الإخلاص</span></span>
+                  <span class="surah-meta">QS. 112 · 4 ayat · Senilai sepertiga Al-Qur'an</span>
+                  <span class="surah-makna">Penegasan tauhid murni: Allah Maha Esa, tempat bergantung, tidak beranak dan tidak diperanakkan, tidak ada yang setara dengan-Nya.</span>
+                </span>
+              </button>
+              <button class="surah-item" style="--hue:#C27C00">
+                <span class="surah-num">103</span>
+                <span class="surah-info">
+                  <span class="surah-name">Al-'Ashr <span class="surah-arab-inline">العصر</span></span>
+                  <span class="surah-meta">QS. 103 · 3 ayat</span>
+                  <span class="surah-makna">Imam Syafi'i berkata: "Seandainya manusia merenungkan surah ini saja, cukuplah bagi mereka." Waktu adalah modal utama — orang yang merugi adalah yang tidak beriman dan beramal shalih.</span>
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rakaat 3 & 4 -->
+        <div class="rakaat-card" style="--hue:#9CA3AF">
+          <div class="rakaat-head" style="background:#6B7280">
+            <span class="rakaat-label">Rakaat Ketiga &amp; Keempat</span>
+            <span class="rakaat-panjang">Al-Fatihah saja</span>
+          </div>
+          <div class="rakaat-body">
+            <div class="only-fatihah">
+              <span class="only-fatihah-icon">📖</span>
+              <span>Pada rakaat ketiga dan keempat, cukup membaca <strong>Al-Fatihah</strong> saja tanpa tambahan surah. Ini adalah sunnah yang diriwayatkan dari Nabi ﷺ. <em style="color:var(--muted)">(HR. Muslim no. 452)</em></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="keutamaan-card" style="--hue:#C27C00">
+        <div class="keutamaan-head">⭐ Keutamaan Sholat Dzuhur</div>
+        <div class="keutamaan-body">
+          <p>"Sesungguhnya waktu Dzuhur adalah saat pintu-pintu langit terbuka. Aku suka amalku diangkat ketika aku dalam keadaan berpuasa." <em>(HR. Tirmidzi no. 478 — Nabi ﷺ sering berpuasa sunnah di hari ini)</em></p>
+          <p>Dzuhur dikerjakan di tengah kesibukan siang — orang yang istiqomah sholat Dzuhur menunjukkan bahwa urusan dunia tidak mengalahkan kewajibannya kepada Allah.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== ASHAR ===== -->
+    <section class="waktu-panel" id="panel-ashar" role="tabpanel">
+      <div class="waktu-header">
+        <div class="waktu-icon-big" style="background:linear-gradient(135deg,#3553D6,#5B7BFF)">🌤️</div>
+        <div class="waktu-title-group">
+          <h2>Sholat Ashar</h2>
+          <p class="waktu-meta">4 rakaat · Lebih ringan dari Dzuhur · <em>Qisharul Mufashshal</em></p>
+        </div>
+      </div>
+      <div class="waktu-dalil">
+        <strong>📜 Dalil</strong>
+        "Nabi ﷺ meringankan bacaan pada sholat Ashar dibanding Dzuhur, dan pada rakaat pertama lebih panjang dari rakaat kedua."
+        <br><em style="font-size:.85rem">— Dari jalur Abu Sa'id Al-Khudri, sanad shahih — HR. An-Nasa'i</em>
+      </div>
+      <div class="kaidah-bar">
+        <span class="kaidah-badge"><span class="k-dot" style="background:#3553D6"></span>Rakaat 1–2: surah pendek–sedang (~15 ayat)</span>
+        <span class="kaidah-badge"><span class="k-dot" style="background:#9CA3AF"></span>Rakaat 3–4: Al-Fatihah saja</span>
+      </div>
+      <div class="rakaat-grid">
+
+        <!-- Rakaat 1 -->
+        <div class="rakaat-card" style="--hue:#3553D6">
+          <div class="rakaat-head">
+            <span class="rakaat-label">Rakaat Pertama</span>
+            <span class="rakaat-panjang">~15–20 ayat</span>
+          </div>
+          <div class="rakaat-body">
+            <div class="fatihah-row">
+              <div class="fatihah-num">1</div>
+              <div class="fatihah-info">
+                <strong>Al-Fatihah <span class="fatihah-arab">الفاتحة</span></strong>
+                <span>QS. 1 · Wajib di setiap rakaat</span>
+              </div>
+            </div>
+            <p class="surah-options-label">+ Lanjutkan dengan salah satu:</p>
+            <div class="surah-options">
+              <button class="surah-item is-sunnah" style="--hue:#3553D6">
+                <span class="surah-num">91</span>
+                <span class="surah-info">
+                  <span class="surah-name">Asy-Syams <span class="surah-arab-inline">الشمس</span></span>
+                  <span class="surah-meta">QS. 91 · 15 ayat</span>
+                  <span class="surah-makna">"Demi matahari dan cahayanya." Jiwa dan dua potensinya: fujur (kejahatan) dan taqwa. Beruntung yang menyucikan jiwa, merugi yang mengotorinya. Kisah Tsamud yang mendustakan nabi mereka.</span>
+                </span>
+                <span class="sunnah-badge">✦ Sunnah Nabi</span>
+              </button>
+              <button class="surah-item" style="--hue:#3553D6">
+                <span class="surah-num">109</span>
+                <span class="surah-info">
+                  <span class="surah-name">Al-Kafirun <span class="surah-arab-inline">الكافرون</span></span>
+                  <span class="surah-meta">QS. 109 · 6 ayat · Senilai seperempat Al-Qur'an</span>
+                  <span class="surah-makna">Pernyataan tegas batas antara tauhid dan syirik: "Untukmu agamamu, dan untukku agamaku." Nabi ﷺ sering membacanya di sholat Subuh dan sholat-sholat sunnah.</span>
+                </span>
+              </button>
+              <button class="surah-item" style="--hue:#3553D6">
+                <span class="surah-num">94</span>
+                <span class="surah-info">
+                  <span class="surah-name">Al-Insyirah <span class="surah-arab-inline">الشرح</span></span>
+                  <span class="surah-meta">QS. 94 · 8 ayat</span>
+                  <span class="surah-makna">Kelapangan dada, kemudahan setelah kesulitan yang dijanjikan dua kali. Pengingat di sore hari: setelah lelah bekerja, ada kemudahan dari Allah yang selalu menemani.</span>
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rakaat 2 -->
+        <div class="rakaat-card" style="--hue:#3553D6">
+          <div class="rakaat-head">
+            <span class="rakaat-label">Rakaat Kedua</span>
+            <span class="rakaat-panjang">Sedikit lebih pendek dari rakaat 1</span>
+          </div>
+          <div class="rakaat-body">
+            <div class="fatihah-row">
+              <div class="fatihah-num">1</div>
+              <div class="fatihah-info">
+                <strong>Al-Fatihah <span class="fatihah-arab">الفاتحة</span></strong>
+                <span>QS. 1 · Wajib di setiap rakaat</span>
+              </div>
+            </div>
+            <p class="surah-options-label">+ Lanjutkan dengan salah satu:</p>
+            <div class="surah-options">
+              <button class="surah-item is-sunnah" style="--hue:#3553D6">
+                <span class="surah-num">92</span>
+                <span class="surah-info">
+                  <span class="surah-name">Al-Lail <span class="surah-arab-inline">الليل</span></span>
+                  <span class="surah-meta">QS. 92 · 21 ayat</span>
+                  <span class="surah-makna">"Demi malam yang menutupi." Dua jalan hidup: dermawan dan bertakwa → dimudahkan; kikir dan merasa cukup → dipersulit. Orang yang memberi dan bertakwa akan diridhai Allah.</span>
+                </span>
+                <span class="sunnah-badge">✦ Sunnah Nabi</span>
+              </button>
+              <button class="surah-item" style="--hue:#3553D6">
+                <span class="surah-num">112</span>
+                <span class="surah-info">
+                  <span class="surah-name">Al-Ikhlas <span class="surah-arab-inline">الإخلاص</span></span>
+                  <span class="surah-meta">QS. 112 · 4 ayat</span>
+                  <span class="surah-makna">Penegasan tauhid yang ringkas namun padat: Allah Esa, tempat bergantung segala makhluk, tidak beranak dan tidak pula diperanakkan.</span>
+                </span>
+              </button>
+              <button class="surah-item" style="--hue:#3553D6">
+                <span class="surah-num">103</span>
+                <span class="surah-info">
+                  <span class="surah-name">Al-'Ashr <span class="surah-arab-inline">العصر</span></span>
+                  <span class="surah-meta">QS. 103 · 3 ayat</span>
+                  <span class="surah-makna">Sangat tepat di waktu Ashar — mengingatkan bahwa waktu siang yang telah berlalu adalah amanah. Yang beruntung adalah yang beriman, beramal, saling menasihati kebenaran dan kesabaran.</span>
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rakaat 3 & 4 -->
+        <div class="rakaat-card">
+          <div class="rakaat-head" style="background:#6B7280">
+            <span class="rakaat-label">Rakaat Ketiga &amp; Keempat</span>
+            <span class="rakaat-panjang">Al-Fatihah saja</span>
+          </div>
+          <div class="rakaat-body">
+            <div class="only-fatihah">
+              <span class="only-fatihah-icon">📖</span>
+              <span>Cukup membaca <strong>Al-Fatihah</strong> saja pada dua rakaat terakhir, sesuai sunnah Nabi ﷺ.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="keutamaan-card" style="--hue:#3553D6">
+        <div class="keutamaan-head">⭐ Keutamaan Sholat Ashar</div>
+        <div class="keutamaan-body">
+          <p>"Jagalah sholat-sholat (wajib) dan sholat Ashar. Apabila kalian meninggalkannya, maka datanglah kepada Allah dalam keadaan seperti orang yang kehilangan keluarga dan hartanya." <em>(QS. Al-Baqarah: 238)</em></p>
+          <p>"Barangsiapa meninggalkan sholat Ashar, maka terhapuslah amalnya." <em>(HR. Bukhari no. 553)</em></p>
+          <p>Para malaikat siang dan malam hadir di sholat Ashar dan Subuh, kemudian mereka ditanya Rabb mereka (yang Maha Mengetahui) tentang kondisi hamba-Nya. <em>(HR. Bukhari no. 555 dan Muslim no. 632)</em></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== MAGHRIB ===== -->
+    <section class="waktu-panel" id="panel-maghrib" role="tabpanel">
+      <div class="waktu-header">
+        <div class="waktu-icon-big" style="background:linear-gradient(135deg,#D63A72,#E0553A)">🌇</div>
+        <div class="waktu-title-group">
+          <h2>Sholat Maghrib</h2>
+          <p class="waktu-meta">3 rakaat · Kategori: <em>Qisharul Mufashshal</em> (surah-surah pendek)</p>
+        </div>
+      </div>
+      <div class="waktu-dalil">
+        <strong>📜 Dalil</strong>
+        "Dari Jubair bin Muth'im: Aku mendengar Rasulullah ﷺ membaca Surah Ath-Thur pada sholat Maghrib."
+        <br><em style="font-size:.85rem">— HR. Bukhari no. 765 dan Muslim no. 463</em>
+      </div>
+      <div class="kaidah-bar">
+        <span class="kaidah-badge"><span class="k-dot" style="background:#D63A72"></span>Rakaat 1–2: surah pendek dari Juz 30</span>
+        <span class="kaidah-badge"><span class="k-dot" style="background:#9CA3AF"></span>Rakaat 3: Al-Fatihah saja</span>
+      </div>
+      <div class="rakaat-grid">
+
+        <!-- Rakaat 1 -->
+        <div class="rakaat-card" style="--hue:#D63A72">
+          <div class="rakaat-head">
+            <span class="rakaat-label">Rakaat Pertama</span>
+            <span class="rakaat-panjang">Surah pendek Juz 30</span>
+          </div>
+          <div class="rakaat-body">
+            <div class="fatihah-row">
+              <div class="fatihah-num">1</div>
+              <div class="fatihah-info">
+                <strong>Al-Fatihah <span class="fatihah-arab">الفاتحة</span></strong>
+                <span>QS. 1 · Wajib di setiap rakaat</span>
+              </div>
+            </div>
+            <p class="surah-options-label">+ Lanjutkan dengan salah satu:</p>
+            <div class="surah-options">
+              <button class="surah-item is-sunnah" style="--hue:#D63A72">
+                <span class="surah-num">95</span>
+                <span class="surah-info">
+                  <span class="surah-name">At-Tin <span class="surah-arab-inline">التين</span></span>
+                  <span class="surah-meta">QS. 95 · 8 ayat</span>
+                  <span class="surah-makna">"Demi buah Tin dan Zaitun." Manusia diciptakan dalam bentuk terbaik, lalu dikembalikan ke tempat paling rendah — kecuali yang beriman dan beramal shalih. Apa yang meragukan setelah ini?</span>
+                </span>
+                <span class="sunnah-badge">✦ Sunnah Nabi</span>
+              </button>
+              <button class="surah-item is-sunnah" style="--hue:#D63A72">
+                <span class="surah-num">109</span>
+                <span class="surah-info">
+                  <span class="surah-name">Al-Kafirun <span class="surah-arab-inline">الكافرون</span></span>
+                  <span class="surah-meta">QS. 109 · 6 ayat</span>
+                  <span class="surah-makna">Pernyataan tegas batas keyakinan. Dibaca Nabi ﷺ di banyak sholat sunnah dan fardhu. Memperbanyak membacanya mendatangkan keberanian dalam mempertahankan tauhid.</span>
+                </span>
+                <span class="sunnah-badge">✦ Sunnah Nabi</span>
+              </button>
+              <button class="surah-item" style="--hue:#D63A72">
+                <span class="surah-num">90</span>
+                <span class="surah-info">
+                  <span class="surah-name">Al-Balad <span class="surah-arab-inline">البلد</span></span>
+                  <span class="surah-meta">QS. 90 · 20 ayat</span>
+                  <span class="surah-makna">"Aku bersumpah dengan negeri ini." Manusia diciptakan dalam kesulitan. Jalan terjal kebaikan: membebaskan budak, memberi makan anak yatim, menjadi golongan beriman yang saling berpesan kasih.</span>
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rakaat 2 -->
+        <div class="rakaat-card" style="--hue:#D63A72">
+          <div class="rakaat-head">
+            <span class="rakaat-label">Rakaat Kedua</span>
+            <span class="rakaat-panjang">Pendek, seimbang dengan rakaat 1</span>
+          </div>
+          <div class="rakaat-body">
+            <div class="fatihah-row">
+              <div class="fatihah-num">1</div>
+              <div class="fatihah-info">
+                <strong>Al-Fatihah <span class="fatihah-arab">الفاتحة</span></strong>
+                <span>QS. 1 · Wajib di setiap rakaat</span>
+              </div>
+            </div>
+            <p class="surah-options-label">+ Lanjutkan dengan salah satu:</p>
+            <div class="surah-options">
+              <button class="surah-item is-sunnah" style="--hue:#D63A72">
+                <span class="surah-num">112</span>
+                <span class="surah-info">
+                  <span class="surah-name">Al-Ikhlas <span class="surah-arab-inline">الإخلاص</span></span>
+                  <span class="surah-meta">QS. 112 · 4 ayat · Senilai sepertiga Al-Qur'an</span>
+                  <span class="surah-makna">Tauhid dalam bentuk paling murni dan padat. Mengakhiri sholat Maghrib dengan surah ini mengingatkan bahwa malam akan dimulai dengan mengandalkan hanya kepada Allah.</span>
+                </span>
+                <span class="sunnah-badge">✦ Sunnah Nabi</span>
+              </button>
+              <button class="surah-item" style="--hue:#D63A72">
+                <span class="surah-num">108</span>
+                <span class="surah-info">
+                  <span class="surah-name">Al-Kautsar <span class="surah-arab-inline">الكوثر</span></span>
+                  <span class="surah-meta">QS. 108 · 3 ayat · Surah terpendek dalam Al-Qur'an</span>
+                  <span class="surah-makna">"Sesungguhnya Kami telah memberimu nikmat yang banyak." Syukuri nikmat dengan sholat dan berkurban. Orang yang membenci Nabi ﷺ-lah yang terputus — bukan Nabi.</span>
+                </span>
+              </button>
+              <button class="surah-item" style="--hue:#D63A72">
+                <span class="surah-num">97</span>
+                <span class="surah-info">
+                  <span class="surah-name">Al-Qadr <span class="surah-arab-inline">القدر</span></span>
+                  <span class="surah-meta">QS. 97 · 5 ayat</span>
+                  <span class="surah-makna">Keagungan malam Lailatul Qadr — lebih baik dari seribu bulan. Para malaikat dan Jibril turun membawa kedamaian hingga fajar. Cocok dibaca tiap Maghrib sebagai pengingat betapa berharganya setiap malam.</span>
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rakaat 3 -->
+        <div class="rakaat-card">
+          <div class="rakaat-head" style="background:#6B7280">
+            <span class="rakaat-label">Rakaat Ketiga</span>
+            <span class="rakaat-panjang">Al-Fatihah saja</span>
+          </div>
+          <div class="rakaat-body">
+            <div class="only-fatihah">
+              <span class="only-fatihah-icon">📖</span>
+              <span>Cukup membaca <strong>Al-Fatihah</strong> saja pada rakaat ketiga.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="keutamaan-card" style="--hue:#D63A72">
+        <div class="keutamaan-head">⭐ Keutamaan Sholat Maghrib</div>
+        <div class="keutamaan-body">
+          <p>Waktu Maghrib adalah salah satu dari dua waktu yang malaikat hadir: Subuh dan Maghrib. "Mereka berkumpul pada sholat Subuh dan Ashar (versi lain menyebut Subuh dan Maghrib)." <em>(HR. Bukhari no. 555)</em></p>
+          <p>Sholat sunnah Maghrib (2 rakaat setelah sholat Maghrib) sangat dianjurkan — Nabi ﷺ tidak pernah meninggalkannya baik saat safar maupun mukim. <em>(HR. Bukhari no. 1172)</em></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== ISYA ===== -->
+    <section class="waktu-panel" id="panel-isya" role="tabpanel">
+      <div class="waktu-header">
+        <div class="waktu-icon-big" style="background:linear-gradient(135deg,#7E37BA,#23308F)">🌙</div>
+        <div class="waktu-title-group">
+          <h2>Sholat Isya</h2>
+          <p class="waktu-meta">4 rakaat · Kategori: <em>Wasathul Mufashshal</em> (surah pertengahan, tidak terlalu panjang)</p>
+        </div>
+      </div>
+      <div class="waktu-dalil">
+        <strong>📜 Dalil</strong>
+        "Nabi ﷺ menegur Mu'adz bin Jabal karena membaca Al-Baqarah di sholat Isya. Beliau bersabda: 'Bacalah Asy-Syams, Ad-Duha, Al-Lail, dan yang semisal itu, karena di belakangmu ada orang tua, anak kecil, dan orang yang punya keperluan.'"
+        <br><em style="font-size:.85rem">— HR. Bukhari no. 705 dan Muslim no. 465, dari Jabir bin Abdillah</em>
+      </div>
+      <div class="kaidah-bar">
+        <span class="kaidah-badge"><span class="k-dot" style="background:#7E37BA"></span>Rakaat 1–2: surah sedang (Juz 29–30)</span>
+        <span class="kaidah-badge"><span class="k-dot" style="background:#9CA3AF"></span>Rakaat 3–4: Al-Fatihah saja</span>
+        <span class="kaidah-badge"><span class="k-dot" style="background:#F59E0B"></span>Jangan terlalu panjang — ada makmum yang perlu dijaga</span>
+      </div>
+      <div class="rakaat-grid">
+
+        <!-- Rakaat 1 -->
+        <div class="rakaat-card" style="--hue:#7E37BA">
+          <div class="rakaat-head">
+            <span class="rakaat-label">Rakaat Pertama</span>
+            <span class="rakaat-panjang">~15–20 ayat</span>
+          </div>
+          <div class="rakaat-body">
+            <div class="fatihah-row">
+              <div class="fatihah-num">1</div>
+              <div class="fatihah-info">
+                <strong>Al-Fatihah <span class="fatihah-arab">الفاتحة</span></strong>
+                <span>QS. 1 · Wajib di setiap rakaat</span>
+              </div>
+            </div>
+            <p class="surah-options-label">+ Lanjutkan dengan salah satu:</p>
+            <div class="surah-options">
+              <button class="surah-item is-sunnah" style="--hue:#7E37BA">
+                <span class="surah-num">91</span>
+                <span class="surah-info">
+                  <span class="surah-name">Asy-Syams <span class="surah-arab-inline">الشمس</span></span>
+                  <span class="surah-meta">QS. 91 · 15 ayat · Disebut langsung oleh Nabi ﷺ</span>
+                  <span class="surah-makna">"Demi matahari dan cahayanya di pagi hari." Jiwa dan dua potensinya. Beruntung yang menyucikannya, merugi yang mengotorinya. Kisah Tsamud yang menolak kebenaran.</span>
+                </span>
+                <span class="sunnah-badge">✦ Disebut Nabi</span>
+              </button>
+              <button class="surah-item is-sunnah" style="--hue:#7E37BA">
+                <span class="surah-num">93</span>
+                <span class="surah-info">
+                  <span class="surah-name">Ad-Duha <span class="surah-arab-inline">الضحى</span></span>
+                  <span class="surah-meta">QS. 93 · 11 ayat · Disebut langsung oleh Nabi ﷺ</span>
+                  <span class="surah-makna">"Demi waktu Duha." Turun saat wahyu berhenti sejenak — Allah tidak meninggalkan Nabi ﷺ. Pengingat: masa lalu yang sulit adalah bukti rahmat Allah, akhirat lebih baik dari dunia.</span>
+                </span>
+                <span class="sunnah-badge">✦ Disebut Nabi</span>
+              </button>
+              <button class="surah-item" style="--hue:#7E37BA">
+                <span class="surah-num">84</span>
+                <span class="surah-info">
+                  <span class="surah-name">Al-Insyiqaq <span class="surah-arab-inline">الإنشقاق</span></span>
+                  <span class="surah-meta">QS. 84 · 25 ayat</span>
+                  <span class="surah-makna">"Apabila langit terbelah." Manusia berjuang keras menuju Allah, lalu menerima catatan amal: yang diterima dari kanan akan mudah dihisab, yang diterima dari belakang akan celaka.</span>
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rakaat 2 -->
+        <div class="rakaat-card" style="--hue:#7E37BA">
+          <div class="rakaat-head">
+            <span class="rakaat-label">Rakaat Kedua</span>
+            <span class="rakaat-panjang">Sebanding dengan rakaat 1</span>
+          </div>
+          <div class="rakaat-body">
+            <div class="fatihah-row">
+              <div class="fatihah-num">1</div>
+              <div class="fatihah-info">
+                <strong>Al-Fatihah <span class="fatihah-arab">الفاتحة</span></strong>
+                <span>QS. 1 · Wajib di setiap rakaat</span>
+              </div>
+            </div>
+            <p class="surah-options-label">+ Lanjutkan dengan salah satu:</p>
+            <div class="surah-options">
+              <button class="surah-item is-sunnah" style="--hue:#7E37BA">
+                <span class="surah-num">92</span>
+                <span class="surah-info">
+                  <span class="surah-name">Al-Lail <span class="surah-arab-inline">الليل</span></span>
+                  <span class="surah-meta">QS. 92 · 21 ayat · Disebut langsung oleh Nabi ﷺ</span>
+                  <span class="surah-makna">"Demi malam yang menutupi." Dua jalan yang berlawanan: dermawan vs kikir, tauhid vs ingkar. Allah memudahkan jalan orang yang memberi dan bertakwa. Sangat sesuai dengan malam hari.</span>
+                </span>
+                <span class="sunnah-badge">✦ Disebut Nabi</span>
+              </button>
+              <button class="surah-item" style="--hue:#7E37BA">
+                <span class="surah-num">96</span>
+                <span class="surah-info">
+                  <span class="surah-name">Al-'Alaq <span class="surah-arab-inline">العلق</span></span>
+                  <span class="surah-meta">QS. 96 · 19 ayat · Wahyu pertama</span>
+                  <span class="surah-makna">"Bacalah dengan nama Tuhanmu yang menciptakan." Wahyu pertama yang turun. Manusia diciptakan dari segumpal darah, Allah mengajarkan dengan pena. Membacanya mengingatkan asal mula risalah Islam.</span>
+                </span>
+              </button>
+              <button class="surah-item" style="--hue:#7E37BA">
+                <span class="surah-num">78</span>
+                <span class="surah-info">
+                  <span class="surah-name">An-Naba' <span class="surah-arab-inline">النبأ</span></span>
+                  <span class="surah-meta">QS. 78 · 40 ayat · Batas Wasathul Mufashshal</span>
+                  <span class="surah-makna">"Tentang apa mereka saling bertanya?" — tentang berita besar (hari Kiamat). Bukti-bukti kekuasaan Allah: bumi hamparan, gunung pasak, tidur istirahat, fajar untuk bekerja. Kemudian gambaran neraka dan surga.</span>
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rakaat 3 & 4 -->
+        <div class="rakaat-card">
+          <div class="rakaat-head" style="background:#6B7280">
+            <span class="rakaat-label">Rakaat Ketiga &amp; Keempat</span>
+            <span class="rakaat-panjang">Al-Fatihah saja</span>
+          </div>
+          <div class="rakaat-body">
+            <div class="only-fatihah">
+              <span class="only-fatihah-icon">📖</span>
+              <span>Cukup membaca <strong>Al-Fatihah</strong> saja pada dua rakaat terakhir.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="catatan-box">
+        <strong>📌 Catatan Isya dari Hadits Mu'adz</strong>
+        Nabi ﷺ secara khusus mencontohkan surah-surah yang dianjurkan di Isya: <em>Asy-Syams, Ad-Duha, Al-Lail, Wal-Laili Idza Yaghsya</em>, dan yang semisal — surah yang tidak memberatkan makmum namun tetap bermakna mendalam.
+        <ul>
+          <li>Jika menjadi imam: pertimbangkan kondisi makmum</li>
+          <li>Jika sholat sendiri: bebas memilih sesuai kemampuan</li>
+          <li>Panjang-pendek bacaan bisa disesuaikan kondisi badan</li>
+        </ul>
+      </div>
+
+      <div class="keutamaan-card" style="--hue:#7E37BA">
+        <div class="keutamaan-head">⭐ Keutamaan Sholat Isya</div>
+        <div class="keutamaan-body">
+          <p>"Tidaklah berat bagi orang munafik selain sholat Isya dan Subuh. Seandainya mereka tahu pahalanya, niscaya mereka mendatanginya meskipun dengan merangkak." <em>(HR. Bukhari no. 657 dan Muslim no. 651)</em></p>
+          <p>"Barangsiapa sholat Isya berjamaah, seolah ia sholat separuh malam. Dan barangsiapa sholat Subuh berjamaah, seolah ia sholat semalam penuh." <em>(HR. Muslim no. 656)</em></p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <p>Panduan ini berdasarkan hadits-hadits shahih dari kitab Bukhari, Muslim, Abu Dawud, Tirmidzi, dan An-Nasa'i. Pilihan surah bersifat sunnah — tidak membatasi. Bacalah sesuai kemampuan dan istiqomah. <a href="index.html">← Kembali ke Doa Rezeki</a></p>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    // ---------- Theme ----------
+    const store = {
+      get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+      set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+    };
+    const root = document.documentElement;
+    const savedTheme = store.get('theme', null);
+    if (savedTheme) root.dataset.theme = savedTheme;
+    document.querySelector('.theme-toggle').addEventListener('click', () => {
+      const dark = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+      root.dataset.theme = dark ? 'light' : 'dark';
+      store.set('theme', root.dataset.theme);
+    });
+
+    // ---------- Hamburger ----------
+    const hamburger = document.getElementById('nav-hamburger');
+    const navMenu = document.getElementById('nav-menu');
+    function closeNavMenu() {
+      if (navMenu) navMenu.classList.remove('is-open');
+      if (hamburger) hamburger.setAttribute('aria-expanded', 'false');
+    }
+    if (hamburger && navMenu) {
+      hamburger.addEventListener('click', () => {
+        const open = navMenu.classList.toggle('is-open');
+        hamburger.setAttribute('aria-expanded', String(open));
+      });
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.nav-inner')) closeNavMenu();
+      });
+      window.addEventListener('resize', () => {
+        if (window.innerWidth > 760) closeNavMenu();
+      });
+    }
+
+    // ---------- Waktu Tabs ----------
+    const tabs = document.querySelectorAll('.waktu-tab');
+    const panels = document.querySelectorAll('.waktu-panel');
+
+    function switchTab(waktu, updateHash = true) {
+      tabs.forEach(t => {
+        const active = t.dataset.waktu === waktu;
+        t.classList.toggle('is-active', active);
+        t.setAttribute('aria-selected', active);
+      });
+      panels.forEach(p => {
+        p.classList.toggle('is-active', p.id === `panel-${waktu}`);
+      });
+      if (updateHash && location.hash !== '#' + waktu) {
+        history.replaceState(null, '', '#' + waktu);
+      }
+      // scroll tab ke tengah pada mobile
+      const activeTab = document.querySelector(`.waktu-tab[data-waktu="${waktu}"]`);
+      activeTab?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => switchTab(tab.dataset.waktu));
+    });
+
+    // Buka tab dari URL hash: sholat.html#ashar
+    const validTabs = ['subuh','dzuhur','ashar','maghrib','isya'];
+    function syncFromHash() {
+      const h = location.hash.replace('#', '');
+      if (validTabs.includes(h)) switchTab(h, false);
+    }
+    syncFromHash();
+    window.addEventListener('hashchange', syncFromHash);
+
+    // ---------- Surah item: klik untuk info toast ----------
+    document.querySelectorAll('.surah-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const name = item.querySelector('.surah-name')?.childNodes[0]?.textContent?.trim();
+        const toast = document.getElementById('toast');
+        if (!toast || !name) return;
+        toast.textContent = `📖 ${name} — bisa dibaca di rakaat ini`;
+        toast.classList.add('show');
+        clearTimeout(window._toastTimer);
+        window._toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
+      });
+    });
+  </script>
+</body>
+</html>
+
